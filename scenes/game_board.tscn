@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
-[ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scenes/player_hand.gd" id="2_3wu0g"]
+[ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
 
 [node name="Game Board" type="Node2D"]
 
