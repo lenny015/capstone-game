@@ -124,22 +124,21 @@ size = Vector2(66, 132)
 [node name="Domino" type="Area2D"]
 script = ExtResource("1_5101h")
 
-[node name="Texture" type="TextureRect" parent="."]
-offset_right = 66.0
-offset_bottom = 132.0
+[node name="Tile" type="Sprite2D" parent="."]
+position = Vector2(3.8146973e-06, 7.6293945e-06)
+scale = Vector2(0.13894737, 0.13894737)
 texture = ExtResource("1_n5m34")
-expand_mode = 1
 
-[node name="RightPip" type="AnimatedSprite2D" parent="Texture"]
-position = Vector2(33, 33)
-scale = Vector2(0.13894737, 0.13894735)
+[node name="RightPip" type="AnimatedSprite2D" parent="Tile"]
+position = Vector2(-1.812973, -237.5)
+scale = Vector2(1.0076336, 0.9999999)
 sprite_frames = SubResource("SpriteFrames_ls528")
 
-[node name="LeftPip" type="AnimatedSprite2D" parent="Texture"]
-position = Vector2(33.000004, 98.99999)
-scale = Vector2(0.13894737, 0.13894735)
+[node name="LeftPip" type="AnimatedSprite2D" parent="Tile"]
+position = Vector2(-1.8129425, 237.49994)
+scale = Vector2(1.0076336, 0.9999999)
 sprite_frames = SubResource("SpriteFrames_wy857")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(33, 66)
+scale = Vector2(1, 0.9999999)
 shape = SubResource("RectangleShape2D_qba6a")
