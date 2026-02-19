@@ -6,9 +6,6 @@ var right_val: int = 0
 
 @onready var right_pips: AnimatedSprite2D = $Tile/RightPip
 @onready var left_pips: AnimatedSprite2D = $Tile/LeftPip
-
-func _ready():
-	set_values(3, 5)
 	
 func set_values(left: int, right: int):
 	left_val = left
