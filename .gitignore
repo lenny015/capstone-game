@@ -19,3 +19,22 @@ data_*/
 mono_crash.*.json
 
 # End of https://www.toptal.com/developers/gitignore/api/godot
+
+# System/tool-specific ignores
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+builds/
+*.exe
+*.pck
+*.zip
+*.apk
+*.dmg
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+*.bak
