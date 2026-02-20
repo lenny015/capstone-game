@@ -4,8 +4,8 @@ class_name Domino
 var left_val: int = 0
 var right_val: int = 0
 
-@onready var right_pips: AnimatedSprite2D = $Tile/RightPip
-@onready var left_pips: AnimatedSprite2D = $Tile/LeftPip
+@onready var right_pips: AnimatedSprite2D = $"../Tile/RightPip"
+@onready var left_pips: AnimatedSprite2D = $"../Tile/LeftPip"
 	
 func set_values(left: int, right: int):
 	left_val = left

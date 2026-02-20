@@ -67,7 +67,6 @@ func move_to_origin(domino: Node2D):
 		tween.tween_property(domino, "position", target_pos, 0.15)
 
 func store_original_position(domino: Node2D):
-	"""Call this from PlayerHand after positioning dominoes"""
 	domino_original_pos[domino] = domino.position.y
 
 func raycast_check():

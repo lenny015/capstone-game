@@ -19,6 +19,10 @@ func _ready():
 		var new_domino = domino_scene.instantiate()
 		domino_manager.add_child(new_domino)
 		new_domino.name = "Domino" + str(i)
+		
+		var domino_area = new_domino.get_node("Area2D")
+		domino_area.set_values(i, i)
+		
 		add_domino_to_hand(new_domino)
 		
 func add_domino_to_hand(domino):
