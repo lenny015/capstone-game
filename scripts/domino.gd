@@ -21,3 +21,9 @@ func update_visuals():
 	
 	left_pips.pause()
 	right_pips.pause()
+	
+func is_double() -> bool:
+	return left_val == right_val
+	
+func get_total_pips() -> int:
+	return left_val + right_val

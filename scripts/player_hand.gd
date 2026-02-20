@@ -3,13 +3,15 @@ extends Node2D
 const HAND_COUNT = 7
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
 const DOMINO_WIDTH = 80
-const HAND_Y_POS = 575
+
 
 var player_hand = []
 var center_screen_x
+var hand_y_pos
 
 func _ready():
 	center_screen_x = get_viewport().size.x / 2
+	hand_y_pos = get_viewport().size.y * 0.92
 	
 	var domino_scene = preload(DOMINO_SCENE_PATH)
 	for i in range(HAND_COUNT):
@@ -24,7 +26,7 @@ func add_domino_to_hand(domino):
 	
 func update_hand_positions():
 	for i in range(player_hand.size()):
-		var new_pos = Vector2(calc_domino_pos(i), HAND_Y_POS)
+		var new_pos = Vector2(calc_domino_pos(i), hand_y_pos)
 		var domino = player_hand[i]
 		animate_card_to_position(domino, new_pos)
 		
