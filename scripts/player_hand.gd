@@ -4,10 +4,11 @@ const HAND_COUNT = 7
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
 const DOMINO_WIDTH = 80
 
-
 var player_hand = []
 var center_screen_x
 var hand_y_pos
+
+@onready var domino_manager = $"../DominoManager"
 
 func _ready():
 	center_screen_x = get_viewport().size.x / 2
@@ -16,8 +17,8 @@ func _ready():
 	var domino_scene = preload(DOMINO_SCENE_PATH)
 	for i in range(HAND_COUNT):
 		var new_domino = domino_scene.instantiate()
-		$"../DominoManager".add_child(new_domino)
-		new_domino.name = "Domino"
+		domino_manager.add_child(new_domino)
+		new_domino.name = "Domino" + str(i)
 		add_domino_to_hand(new_domino)
 		
 func add_domino_to_hand(domino):
@@ -30,9 +31,12 @@ func update_hand_positions():
 		var domino = player_hand[i]
 		animate_card_to_position(domino, new_pos)
 		
+		await get_tree().create_timer(0.15).timeout
+		domino_manager.store_original_position(domino)
+		
 func calc_domino_pos(index):
 	var total_width = (player_hand.size() -1) * DOMINO_WIDTH
-	var x_offset = center_screen_x + index * DOMINO_WIDTH - total_width / 2
+	var x_offset = center_screen_x + index * DOMINO_WIDTH - total_width / 2.0
 	return x_offset
 
 func animate_card_to_position(domino, new_pos):
