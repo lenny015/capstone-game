@@ -14,16 +14,31 @@ func _ready():
 	center_screen_x = get_viewport().size.x / 2
 	hand_y_pos = get_viewport().size.y * 0.92
 	
+	# Hand empty
+
+func add_domino_to_hand_from_values(left: int, right: int):
+	if player_hand.size() >= HAND_COUNT:
+		return
+
 	var domino_scene = preload(DOMINO_SCENE_PATH)
-	for i in range(HAND_COUNT):
-		var new_domino = domino_scene.instantiate()
-		domino_manager.add_child(new_domino)
-		new_domino.name = "Domino" + str(i)
-		
-		var domino_area = new_domino.get_node("Area2D")
-		domino_area.set_values(i, i)
-		
-		add_domino_to_hand(new_domino)
+	var new_domino = domino_scene.instantiate()
+	domino_manager.add_child(new_domino)
+	new_domino.name = "Domino_" + str(left) + "_" + str(right)
+	
+	var boneyard = get_node("../Boneyard")
+	new_domino.position = boneyard.get_node("Area2D").global_position
+	
+	var domino_area = new_domino.get_node("Area2D")
+	domino_area.set_values(left, right)
+	
+	domino_area.collision_layer = 0
+	domino_area.collision_mask = 0
+
+	add_domino_to_hand(new_domino)
+	
+	await get_tree().create_timer(0.4).timeout
+	domino_area.collision_layer = 1
+	domino_area.collision_mask = 1
 		
 func add_domino_to_hand(domino):
 	player_hand.insert(0, domino)

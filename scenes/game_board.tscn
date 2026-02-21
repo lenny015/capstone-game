@@ -23,4 +23,3 @@ script = ExtResource("1_tqoos")
 script = ExtResource("2_3wu0g")
 
 [node name="Boneyard" parent="." instance=ExtResource("3_mq2xb")]
-script = null
