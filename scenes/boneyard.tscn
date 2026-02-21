@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://byji2xvai8u7w"]
+
+[ext_resource type="Texture2D" uid="uid://de5tagbah8bo5" path="res://assets/domino/domino_backside.png" id="1_h71bg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kggtv"]
+size = Vector2(66, 132)
+
+[node name="Boneyard" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1830, 540)
+scale = Vector2(0.13894735, 0.13894737)
+texture = ExtResource("1_h71bg")
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(1830, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+scale = Vector2(1, 0.9999999)
+shape = SubResource("RectangleShape2D_kggtv")
