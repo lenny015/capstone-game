@@ -49,8 +49,6 @@ func update_hand_positions():
 		var new_pos = Vector2(calc_domino_pos(i), hand_y_pos)
 		var domino = player_hand[i]
 		animate_card_to_position(domino, new_pos)
-		
-		await get_tree().create_timer(0.15).timeout
 		domino_manager.store_original_position(domino)
 		
 func calc_domino_pos(index):
