@@ -60,7 +60,6 @@ func _spawn_slots():
 	slot_left.position = first["node"].position + Vector2(-(TILE_H + SLOT_GAP), 0)
 	slot_left.get_node("Area2D").collision_layer = 4
 	slot_left.get_node("Area2D").collision_mask = 4
-	slot_left.get_node("Area2D").slot_clicked.connect(_on_slot_clicked)
 	active_slots.append(slot_left)
 
 	# Slot after last
@@ -70,7 +69,6 @@ func _spawn_slots():
 	slot_right.position = last["node"].position + Vector2(TILE_H + SLOT_GAP, 0)
 	slot_right.get_node("Area2D").collision_layer = 4
 	slot_right.get_node("Area2D").collision_mask = 4
-	slot_right.get_node("Area2D").slot_clicked.connect(_on_slot_clicked)
 	active_slots.append(slot_right)
 	
 
@@ -87,17 +85,17 @@ func _on_slot_clicked(slot):
 	var domino_to_place = selected_domino
 	var target_pos = slot.position
 
-	player_hand.remove_domino_from_hand(domino_to_place)
-	deselect_domino()
-
 	if domino_to_place.get_parent() != self:
-		domino_to_place.reparent(self)
+		domino_to_place.reparent(self, true)
 
 	domino_to_place.rotation_degrees = 90
 	domino_to_place.position = target_pos
 
 	domino_to_place.get_node("Area2D").collision_layer = 0
 	domino_to_place.get_node("Area2D").collision_mask = 0
+	
+	player_hand.remove_domino_from_hand(domino_to_place)
+	deselect_domino()
 
 	placed_dominoes.append({
 		"node": domino_to_place,
@@ -109,6 +107,8 @@ func _on_slot_clicked(slot):
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
+			if _slot_raycast_check():
+				return
 			var domino = raycast_check()
 			if domino:
 				toggle_selection(domino)
@@ -163,6 +163,23 @@ func move_to_origin(domino: Node2D):
 
 func store_original_position(domino: Node2D):
 	domino_original_pos[domino] = domino.position.y
+
+func _slot_raycast_check() :
+	if active_slots.is_empty():
+		return false
+	var space_state = get_world_2d().direct_space_state
+	var parameters = PhysicsPointQueryParameters2D.new()
+	parameters.position = get_global_mouse_position()
+	parameters.collide_with_areas = true
+	parameters.collision_mask = 4
+	var result = space_state.intersect_point(parameters)
+	if result.size() > 0:
+		var clicked_area = result[0].collider
+		var slot_node = clicked_area.get_parent()
+		if slot_node in active_slots:
+			_on_slot_clicked(slot_node)
+			return true
+		return false
 
 func raycast_check():
 	var space_state = get_world_2d().direct_space_state
