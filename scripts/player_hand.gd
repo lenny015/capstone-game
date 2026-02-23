@@ -49,7 +49,6 @@ func update_hand_positions():
 		var new_pos = Vector2(calc_domino_pos(i), hand_y_pos)
 		var domino = player_hand[i]
 		animate_card_to_position(domino, new_pos)
-		domino_manager.store_original_position(domino)
 		
 func calc_domino_pos(index):
 	var total_width = (player_hand.size() -1) * DOMINO_WIDTH
@@ -59,3 +58,4 @@ func calc_domino_pos(index):
 func animate_card_to_position(domino, new_pos):
 	var tween = get_tree().create_tween()
 	tween.tween_property(domino, "position", new_pos, 0.1)
+	tween.tween_callback(func(): domino_manager.store_original_position(domino))

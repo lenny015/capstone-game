@@ -2,14 +2,48 @@ extends Node2D
 
 const HOVER_OFFSET = -15
 const SELECT_OFFSET = -30
+const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
+const TILE_W = 66
+const TILE_H = 132
 
 var hovered_domino: Node2D = null
 var selected_domino: Node2D = null
 var domino_original_pos = {}
 
-func _ready():
-	pass
+var placed_dominoes: Array = []
 
+@onready var boneyard = $"../Boneyard"
+
+func _ready():
+	call_deferred("_place_first_domino")
+	
+func _place_first_domino():
+	if boneyard.domino_pool.is_empty():
+		return
+		
+	var values = boneyard.domino_pool.pop_back()
+	var domino_scene = preload(DOMINO_SCENE_PATH)
+	var new_domino = domino_scene.instantiate()
+	add_child(new_domino)
+	
+	new_domino.position = get_viewport().size / 2
+	new_domino.rotation_degrees = 90
+
+	var domino_area = new_domino.get_node("Area2D")
+	domino_area.set_values(values[0], values[1])
+	domino_area.collision_layer = 0
+	domino_area.collision_mask = 0
+
+	placed_dominoes.append({
+		"node": new_domino,
+		"direction": "horizontal"
+	})
+
+
+	placed_dominoes.append({
+		"node": new_domino,
+		"direction": "horizontal"
+	})
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
