@@ -44,6 +44,11 @@ func add_domino_to_hand(domino):
 	player_hand.insert(0, domino)
 	update_hand_positions()
 	
+func remove_domino_from_hand(domino: Node2D):
+	player_hand.erase(domino)
+	domino_manager.domino_original_pos.erase(domino)
+	update_hand_positions()
+	
 func update_hand_positions():
 	for i in range(player_hand.size()):
 		var new_pos = Vector2(calc_domino_pos(i), hand_y_pos)
