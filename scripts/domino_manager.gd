@@ -12,7 +12,8 @@ var hovered_domino: Node2D = null
 var selected_domino: Node2D = null
 var domino_original_pos = {}
 
-var placed_dominoes: Array = []
+var board_head = null
+var board_tail = null
 var active_slots: Array = []
 
 @onready var boneyard = $"../Boneyard"
@@ -21,6 +22,13 @@ var active_slots: Array = []
 func _ready():
 	call_deferred("_place_first_domino")
 	
+func _make_board_node(domino_node):
+	return {
+		"node": domino_node,
+		"prev": null,
+		"next": null
+	}	
+
 func _place_first_domino():
 	if boneyard.domino_pool.is_empty():
 		return
@@ -38,26 +46,22 @@ func _place_first_domino():
 	domino_area.collision_layer = 0
 	domino_area.collision_mask = 0
 
-	placed_dominoes.append({
-		"node": new_domino,
-		"direction": "horizontal"
-	})
+	var entry = _make_board_node(new_domino)
+	board_head = entry
+	board_tail = entry
 	
 func _spawn_slots():
 	_clear_slots()
-	if placed_dominoes.is_empty():
+	if board_head == null:
 		return
 
 	var slot_scene = preload(DOMINO_SLOT_SCENE_PATH)
-
-	var first = placed_dominoes.front()
-	var last = placed_dominoes.back()
 
 	# Slot before first
 	var slot_left = slot_scene.instantiate()
 	add_child(slot_left)
 	slot_left.rotation_degrees = 90
-	slot_left.position = first["node"].position + Vector2(-(TILE_H + SLOT_GAP), 0)
+	slot_left.position = board_head["node"].position + Vector2(-(TILE_H + SLOT_GAP), 0)
 	slot_left.get_node("Area2D").collision_layer = 4
 	slot_left.get_node("Area2D").collision_mask = 4
 	active_slots.append(slot_left)
@@ -66,7 +70,7 @@ func _spawn_slots():
 	var slot_right = slot_scene.instantiate()
 	add_child(slot_right)
 	slot_right.rotation_degrees = 90
-	slot_right.position = last["node"].position + Vector2(TILE_H + SLOT_GAP, 0)
+	slot_right.position = board_tail["node"].position + Vector2(TILE_H + SLOT_GAP, 0)
 	slot_right.get_node("Area2D").collision_layer = 4
 	slot_right.get_node("Area2D").collision_mask = 4
 	active_slots.append(slot_right)
@@ -84,6 +88,7 @@ func _on_slot_clicked(slot):
 
 	var domino_to_place = selected_domino
 	var target_pos = slot.position
+	var is_left = slot.position.x < board_head["node"].position.x
 
 	if domino_to_place.get_parent() != self:
 		domino_to_place.reparent(self, true)
@@ -97,10 +102,15 @@ func _on_slot_clicked(slot):
 	player_hand.remove_domino_from_hand(domino_to_place)
 	deselect_domino()
 
-	placed_dominoes.append({
-		"node": domino_to_place,
-		"direction": "horizontal"
-	})
+	var entry = _make_board_node(domino_to_place)
+	if is_left: 
+		entry.next = board_head
+		board_head.prev = entry
+		board_head = entry
+	else:
+		entry.prev = board_tail
+		board_tail.next = entry
+		board_tail = entry
 
 	_clear_slots()
 		
