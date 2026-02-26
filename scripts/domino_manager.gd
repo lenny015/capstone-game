@@ -4,6 +4,8 @@ extends Node2D
 @onready var player_hand = $"../PlayerHand"
 @onready var boundary_node = $"../Boundary"
 
+enum Direction { RIGHT, LEFT, DOWN, UP }
+
 const HOVER_OFFSET = -15
 const SELECT_OFFSET = -30
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
@@ -24,6 +26,9 @@ var active_slots: Array = []
 #end values
 var head_val: int = -1
 var tail_val: int = -1
+
+var head_dir: Direction = Direction.LEFT
+var tail_dir: Direction = Direction.LEFT
 
 func _ready():
 	call_deferred("_place_first_domino")
@@ -69,6 +74,35 @@ func _half_width(domino_node: Node2D) -> float:
 
 func _can_place(val_a: int, val_b: int, end_val: int) -> bool:
 	return val_a == end_val or val_b == end_val
+	
+func _dir_vec(dir: Direction) -> Vector2:
+	match dir:
+		Direction.RIGHT: return Vector2(1, 0)
+		Direction.LEFT:  return Vector2(-1, 0)
+		Direction.DOWN:  return Vector2(0, 1)
+		Direction.UP:    return Vector2(0, -1)
+	return Vector2(1, 0)
+	
+func _turn_cw(dir: Direction) -> Direction:
+	match dir:
+		Direction.RIGHT: return Direction.DOWN
+		Direction.DOWN:  return Direction.LEFT
+		Direction.LEFT:  return Direction.UP
+		Direction.UP:    return Direction.RIGHT
+	return dir
+	
+func _turn_ccw(dir: Direction) -> Direction:
+	match dir:
+		Direction.RIGHT: return Direction.UP
+		Direction.UP:    return Direction.LEFT
+		Direction.LEFT:  return Direction.DOWN
+		Direction.DOWN:  return Direction.RIGHT
+	return dir
+	
+func _out_of_bounds(pos: Vector2) -> bool:
+	var margin = TILE_H / 2.0 + SLOT_GAP
+	var set_margin = boundary.grow(-margin)
+	return not set_margin.has_point(pos)
 	
 func _spawn_slots():
 	_clear_slots()
