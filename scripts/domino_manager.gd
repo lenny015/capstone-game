@@ -91,14 +91,6 @@ func _turn_cw(dir: Direction) -> Direction:
 		Direction.UP:    return Direction.RIGHT
 	return dir
 	
-func _turn_ccw(dir: Direction) -> Direction:
-	match dir:
-		Direction.RIGHT: return Direction.UP
-		Direction.UP:    return Direction.LEFT
-		Direction.LEFT:  return Direction.DOWN
-		Direction.DOWN:  return Direction.RIGHT
-	return dir
-	
 func _out_of_bounds(pos: Vector2) -> bool:
 	var margin = TILE_H / 2.0 + SLOT_GAP
 	var set_margin = boundary.grow(-margin)
