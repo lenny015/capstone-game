@@ -50,27 +50,35 @@ func _place_first_domino():
 	board_head = entry
 	board_tail = entry
 	
+func _half_width(domino_node: Node2D) -> float:
+	return TILE_H / 2.0 if domino_node.rotation_degrees == 90 else TILE_W / 2.0
+	
 func _spawn_slots():
 	_clear_slots()
 	if board_head == null:
 		return
 
 	var slot_scene = preload(DOMINO_SLOT_SCENE_PATH)
+	var is_double = selected_domino.get_node("Area2D").is_double()
+	var select_half = TILE_W / 2.0 if is_double else TILE_H / 2.0
+	var select_rotation = 0 if is_double else 90
 
 	# Slot before first
+	var l_gap = _half_width(board_head["node"]) + select_half + SLOT_GAP
 	var slot_left = slot_scene.instantiate()
 	add_child(slot_left)
-	slot_left.rotation_degrees = 90
-	slot_left.position = board_head["node"].position + Vector2(-(TILE_H + SLOT_GAP), 0)
+	slot_left.rotation_degrees = select_rotation
+	slot_left.position = board_head["node"].position + Vector2(-l_gap, 0)
 	slot_left.get_node("Area2D").collision_layer = 4
 	slot_left.get_node("Area2D").collision_mask = 4
 	active_slots.append(slot_left)
 
 	# Slot after last
+	var r_gap = _half_width(board_tail["node"]) + select_half + SLOT_GAP
 	var slot_right = slot_scene.instantiate()
 	add_child(slot_right)
-	slot_right.rotation_degrees = 90
-	slot_right.position = board_tail["node"].position + Vector2(TILE_H + SLOT_GAP, 0)
+	slot_right.rotation_degrees = select_rotation
+	slot_right.position = board_tail["node"].position + Vector2(r_gap, 0)
 	slot_right.get_node("Area2D").collision_layer = 4
 	slot_right.get_node("Area2D").collision_mask = 4
 	active_slots.append(slot_right)
@@ -93,7 +101,8 @@ func _on_slot_clicked(slot):
 	if domino_to_place.get_parent() != self:
 		domino_to_place.reparent(self, true)
 
-	domino_to_place.rotation_degrees = 90
+	var is_double = domino_to_place.get_node("Area2D").is_double()
+	domino_to_place.rotation_degrees = 0 if is_double else 90
 	domino_to_place.position = target_pos
 
 	domino_to_place.get_node("Area2D").collision_layer = 0
