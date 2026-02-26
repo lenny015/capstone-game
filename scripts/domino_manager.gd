@@ -59,7 +59,8 @@ func _place_first_domino():
 	board_tail = entry
 	
 func _half_width(domino_node: Node2D) -> float:
-	return TILE_H / 2.0 if domino_node.rotation_degrees == 90 else TILE_W / 2.0
+	var r = int(domino_node.rotation_degrees) % 180
+	return TILE_H / 2.0 if r == 90 else TILE_W / 2.0
 
 func _can_place(val_a: int, val_b: int, end_val: int) -> bool:
 	return val_a == end_val or val_b == end_val
@@ -114,6 +115,7 @@ func _on_slot_clicked(slot):
 	var area = domino_to_place.get_node("Area2D")
 	var is_double = area.is_double()
 	var end_val = head_val if is_left else tail_val
+	var needs_flip = area.right_val == end_val
 	var new_open = area.right_val if area.left_val == end_val else area.left_val
 	
 	domino_to_place.rotation_degrees = 0 if is_double else 90
@@ -125,16 +127,20 @@ func _on_slot_clicked(slot):
 	deselect_domino()
 
 	var entry = _make_board_node(domino_to_place)
+	var base_rotation = 0 if is_double else 90
+	var flipped_rotation = 180 if is_double else 270
 	if is_left:
 		head_val = new_open
 		entry.next = board_head
 		board_head.prev = entry
 		board_head = entry
+		domino_to_place.rotation_degrees = flipped_rotation if not needs_flip else base_rotation
 	else:
 		tail_val = new_open
 		entry.prev = board_tail
 		board_tail.next = entry
 		board_tail = entry
+		domino_to_place.rotation_degrees = base_rotation if not needs_flip else flipped_rotation
 
 	_clear_slots()
 		
