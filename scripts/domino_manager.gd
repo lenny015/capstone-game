@@ -1,5 +1,9 @@
 extends Node2D
 
+@onready var boneyard = $"../Boneyard"
+@onready var player_hand = $"../PlayerHand"
+@onready var boundary_node = $"../Boundary"
+
 const HOVER_OFFSET = -15
 const SELECT_OFFSET = -30
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
@@ -11,6 +15,7 @@ const SLOT_GAP = 8
 var hovered_domino: Node2D = null
 var selected_domino: Node2D = null
 var domino_original_pos = {}
+var boundary: Rect2
 
 var board_head = null
 var board_tail = null
@@ -20,18 +25,21 @@ var active_slots: Array = []
 var head_val: int = -1
 var tail_val: int = -1
 
-@onready var boneyard = $"../Boneyard"
-@onready var player_hand = $"../PlayerHand"
-
 func _ready():
 	call_deferred("_place_first_domino")
+	call_deferred("_setup_boundary")
 	
 func _make_board_node(domino_node):
 	return {
 		"node": domino_node,
 		"prev": null,
 		"next": null
-	}	
+	}
+	
+func _setup_boundary():
+	var shape = boundary_node.get_node("CollisionShape2D")
+	var shape_size = shape.shape.size * shape.global_transform.get_scale()
+	boundary = Rect2(shape.global_position - shape_size / 2.0, shape_size)
 
 func _place_first_domino():
 	if boneyard.domino_pool.is_empty():
