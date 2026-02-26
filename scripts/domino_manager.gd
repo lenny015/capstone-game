@@ -38,10 +38,8 @@ func _place_first_domino():
 		return
 		
 	var values = boneyard.domino_pool.pop_back()
-	var domino_scene = preload(DOMINO_SCENE_PATH)
-	var new_domino = domino_scene.instantiate()
+	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
 	add_child(new_domino)
-	
 	new_domino.position = get_viewport().size / 2
 	
 	var domino_area = new_domino.get_node("Area2D")
@@ -54,7 +52,6 @@ func _place_first_domino():
 	tail_val = domino_area.right_val
 
 	var entry = _make_board_node(new_domino)
-	print("left: " + str(domino_area.left_val) + ", right: " + str(domino_area.right_val))
 	board_head = entry
 	board_tail = entry
 	
@@ -72,29 +69,29 @@ func _spawn_slots():
 
 	var slot_scene = preload(DOMINO_SLOT_SCENE_PATH)
 	var area = selected_domino.get_node("Area2D")
+	var is_double = area.is_double()
 	var val_a = area.left_val
 	var val_b = area.right_val
-	var is_double = area.is_double()
+	var slot_half = TILE_W / 2.0 if is_double else TILE_H / 2.0
+	var slot_rot = 0 if is_double else 90
 
 	if _can_place(val_a, val_b, head_val):
-		_spawn_slot_at_location(slot_scene, board_head["node"], Vector2(-1, 0), is_double)
+		var gap = _half_width(board_head["node"]) + slot_half + SLOT_GAP
+		_make_slot(slot_scene, board_head["node"].position + Vector2(-gap, 0), slot_rot)
 		
 	if _can_place(val_a, val_b, tail_val):
-		_spawn_slot_at_location(slot_scene, board_tail["node"], Vector2(1, 0), is_double)
+		var gap = _half_width(board_tail["node"]) + slot_half + SLOT_GAP
+		_make_slot(slot_scene, board_tail["node"].position + Vector2(gap, 0), slot_rot)
 		
-func _spawn_slot_at_location(slot_scene, end_node: Node2D, offset: Vector2, is_double: bool):
-	var select_half = TILE_W / 2.0 if is_double else TILE_H / 2.0
-	var select_rotation = 0 if is_double else 90
-	var gap = _half_width(end_node) + select_half + SLOT_GAP
+func _make_slot(slot_scene, pos: Vector2, rot: float):
 	var slot = slot_scene.instantiate()
 	add_child(slot)
-	slot.rotation_degrees = select_rotation
-	slot.position = end_node.position + offset * gap
+	slot.rotation_degrees = rot
+	slot.position = pos
 	slot.get_node("Area2D").collision_layer = 4
 	slot.get_node("Area2D").collision_mask = 4
 	active_slots.append(slot)
 	
-
 func _clear_slots():
 	for slot in active_slots:
 		if is_instance_valid(slot):
@@ -106,41 +103,39 @@ func _on_slot_clicked(slot):
 		return
 
 	var domino_to_place = selected_domino
-	var target_pos = slot.position
 	var is_left = slot.position.x < board_head["node"].position.x
-
-	if domino_to_place.get_parent() != self:
-		domino_to_place.reparent(self, true)
-
 	var area = domino_to_place.get_node("Area2D")
-	var is_double = area.is_double()
+	
 	var end_val = head_val if is_left else tail_val
+	var is_double = area.is_double()
 	var needs_flip = area.right_val == end_val
 	var new_open = area.right_val if area.left_val == end_val else area.left_val
 	
-	domino_to_place.rotation_degrees = 0 if is_double else 90
-	domino_to_place.position = target_pos
+	var base_rot = 0 if is_double else 90
+	var flip_rot = 180 if is_double else 270
+	
+	if domino_to_place.get_parent() != self:
+		domino_to_place.reparent(self, true)
+	
+	domino_to_place.rotation_degrees = (flip_rot if not needs_flip else base_rot) if is_left else (base_rot if not needs_flip else flip_rot)
+	domino_to_place.position = slot.position
 	area.collision_layer = 0
 	area.collision_mask = 0
 	
 	player_hand.remove_domino_from_hand(domino_to_place)
 	deselect_domino()
-
+	
 	var entry = _make_board_node(domino_to_place)
-	var base_rotation = 0 if is_double else 90
-	var flipped_rotation = 180 if is_double else 270
 	if is_left:
 		head_val = new_open
 		entry.next = board_head
 		board_head.prev = entry
 		board_head = entry
-		domino_to_place.rotation_degrees = flipped_rotation if not needs_flip else base_rotation
 	else:
 		tail_val = new_open
 		entry.prev = board_tail
 		board_tail.next = entry
 		board_tail = entry
-		domino_to_place.rotation_degrees = base_rotation if not needs_flip else flipped_rotation
 
 	_clear_slots()
 		
@@ -149,18 +144,16 @@ func _input(event):
 		if event.pressed:
 			if _slot_raycast_check():
 				return
-			var domino = raycast_check()
+			var domino = raycast_check(1)
 			if domino:
 				toggle_selection(domino)
 
 func _process(_delta):
-	var domino = raycast_check()
-	
+	var domino = raycast_check(1)
 	if domino != hovered_domino:
 		if hovered_domino and hovered_domino != selected_domino:
 			move_to_origin(hovered_domino)
 		hovered_domino = domino
-		
 		if hovered_domino and hovered_domino != selected_domino:
 			lift_domino(hovered_domino, HOVER_OFFSET)
 
@@ -207,27 +200,19 @@ func store_original_position(domino: Node2D):
 func _slot_raycast_check() :
 	if active_slots.is_empty():
 		return false
-	var space_state = get_world_2d().direct_space_state
-	var parameters = PhysicsPointQueryParameters2D.new()
-	parameters.position = get_global_mouse_position()
-	parameters.collide_with_areas = true
-	parameters.collision_mask = 4
-	var result = space_state.intersect_point(parameters)
-	if result.size() > 0:
-		var clicked_area = result[0].collider
-		var slot_node = clicked_area.get_parent()
-		if slot_node in active_slots:
-			_on_slot_clicked(slot_node)
-			return true
-		return false
+	var slot = raycast_check(4)
+	if slot and slot in active_slots:
+		_on_slot_clicked(slot)
+		return true
+	return false
 
-func raycast_check():
+func raycast_check(mask: int):
 	var space_state = get_world_2d().direct_space_state
 	var parameters = PhysicsPointQueryParameters2D.new()
 	
 	parameters.position = get_global_mouse_position()
 	parameters.collide_with_areas = true
-	parameters.collision_mask = 1
+	parameters.collision_mask = mask
 	
 	var result = space_state.intersect_point(parameters)
 	if result.size() > 0:

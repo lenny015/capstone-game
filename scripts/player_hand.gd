@@ -13,8 +13,6 @@ var hand_y_pos
 func _ready():
 	center_screen_x = get_viewport().size.x / 2
 	hand_y_pos = get_viewport().size.y * 0.92
-	
-	# Hand empty
 
 func add_domino_to_hand_from_values(left: int, right: int):
 	if player_hand.size() >= HAND_COUNT:

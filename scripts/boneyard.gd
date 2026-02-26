@@ -31,10 +31,8 @@ func _input(event):
 		
 func draw_domino():
 	if domino_pool.is_empty():
-		print("Boneyard empty")
 		return
 	if player_hand.player_hand.size() >= MAX_HAND_SIZE:
-		print("Hand full")
 		return
 		
 	var values = domino_pool.pop_back()
