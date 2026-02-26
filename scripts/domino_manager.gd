@@ -39,12 +39,12 @@ func _place_first_domino():
 	add_child(new_domino)
 	
 	new_domino.position = get_viewport().size / 2
-	new_domino.rotation_degrees = 90
-
+	
 	var domino_area = new_domino.get_node("Area2D")
 	domino_area.set_values(values[0], values[1])
 	domino_area.collision_layer = 0
 	domino_area.collision_mask = 0
+	new_domino.rotation_degrees = 0 if domino_area.is_double() else 90
 
 	var entry = _make_board_node(new_domino)
 	board_head = entry
