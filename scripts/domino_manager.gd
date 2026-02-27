@@ -96,6 +96,13 @@ func _out_of_bounds(pos: Vector2) -> bool:
 	var set_margin = boundary.grow(-margin)
 	return not set_margin.has_point(pos)
 	
+func _try_turn(base_pos: Vector2, current_dir: Direction, end_half: float, incoming_half: float) -> Direction:
+	var gap = end_half + incoming_half + SLOT_GAP
+	var candidate_pos = base_pos + _dir_vec(_turn_cw(current_dir)) * gap
+	if not _out_of_bounds(candidate_pos):
+		return _turn_cw(current_dir)
+	return current_dir
+	
 func _spawn_slots():
 	_clear_slots()
 	if board_head == null:
@@ -111,21 +118,34 @@ func _spawn_slots():
 
 	if _can_place(val_a, val_b, head_val):
 		var end_half = _half_width(board_head["node"])
+		var dir = head_dir
 		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
-		_make_slot(slot_scene, pos, slot_rot)
+		if _out_of_bounds(pos):
+			dir = _try_turn(board_head["node"].position, dir, end_half, slot_half)
+			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+		_make_slot(slot_scene, pos, slot_rot, dir, true)
 		
 	if _can_place(val_a, val_b, tail_val):
 		var end_half = _half_width(board_tail["node"])
+		var dir = tail_dir
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
-		_make_slot(slot_scene, pos, slot_rot)
+		if _out_of_bounds(pos):
+			dir = _try_turn(board_tail["node"].position, dir, end_half, slot_half)
+			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+		_make_slot(slot_scene, pos, slot_rot, dir, false)
 		
-func _make_slot(slot_scene, pos: Vector2, rot: float):
+func _make_slot(slot_scene, pos: Vector2, rot: float, dir, is_head: bool):
 	var slot = slot_scene.instantiate()
 	add_child(slot)
 	slot.rotation_degrees = rot
 	slot.position = pos
-	slot.get_node("Area2D").collision_layer = 4
-	slot.get_node("Area2D").collision_mask = 4
+	
+	var area = slot.get_node("Area2D")
+	area.collision_layer = 4
+	area.collision_mask = 4
+	area.dir = dir
+	area.is_head = is_head
+	
 	active_slots.append(slot)
 	
 func _clear_slots():
@@ -139,10 +159,11 @@ func _on_slot_clicked(slot):
 		return
 
 	var domino_to_place = selected_domino
-	var is_left = slot.position.x < board_head["node"].position.x
+	var is_head = slot.get_node("Area2D").is_head
+	var placed_dir =slot.get_node("Area2D").dir
 	var area = domino_to_place.get_node("Area2D")
 	
-	var end_val = head_val if is_left else tail_val
+	var end_val = head_val if is_head else tail_val
 	var is_double = area.is_double()
 	var needs_flip = area.right_val == end_val
 	var new_open = area.right_val if area.left_val == end_val else area.left_val
@@ -153,7 +174,7 @@ func _on_slot_clicked(slot):
 	if domino_to_place.get_parent() != self:
 		domino_to_place.reparent(self, true)
 	
-	domino_to_place.rotation_degrees = (flip_rot if not needs_flip else base_rot) if is_left else (base_rot if not needs_flip else flip_rot)
+	domino_to_place.rotation_degrees = (flip_rot if not needs_flip else base_rot) if is_head else (base_rot if not needs_flip else flip_rot)
 	domino_to_place.position = slot.position
 	area.collision_layer = 0
 	area.collision_mask = 0
@@ -162,13 +183,15 @@ func _on_slot_clicked(slot):
 	deselect_domino()
 	
 	var entry = _make_board_node(domino_to_place)
-	if is_left:
+	if is_head:
 		head_val = new_open
+		head_dir = placed_dir
 		entry.next = board_head
 		board_head.prev = entry
 		board_head = entry
 	else:
 		tail_val = new_open
+		tail_dir = placed_dir
 		entry.prev = board_tail
 		board_tail.next = entry
 		board_tail = entry
