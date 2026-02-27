@@ -123,7 +123,8 @@ func _spawn_slots():
 		if _out_of_bounds(pos):
 			dir = _try_turn(board_head["node"].position, dir, end_half, slot_half)
 			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
-		_make_slot(slot_scene, pos, slot_rot, dir, true)
+		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
+		_make_slot(slot_scene, pos, rot, dir, true)
 		
 	if _can_place(val_a, val_b, tail_val):
 		var end_half = _half_width(board_tail["node"])
@@ -131,8 +132,9 @@ func _spawn_slots():
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
 			dir = _try_turn(board_tail["node"].position, dir, end_half, slot_half)
-			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
-		_make_slot(slot_scene, pos, slot_rot, dir, false)
+			pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
+		_make_slot(slot_scene, pos, rot, dir, false)
 		
 func _make_slot(slot_scene, pos: Vector2, rot: float, dir, is_head: bool):
 	var slot = slot_scene.instantiate()
@@ -168,13 +170,19 @@ func _on_slot_clicked(slot):
 	var needs_flip = area.right_val == end_val
 	var new_open = area.right_val if area.left_val == end_val else area.left_val
 	
-	var base_rot = 0 if is_double else 90
-	var flip_rot = 180 if is_double else 270
+	var is_vertical = placed_dir == Direction.UP or placed_dir == Direction.DOWN
+	var base_rot = 0 if is_vertical else 90
+	var flip_rot = base_rot + 180
 	
 	if domino_to_place.get_parent() != self:
 		domino_to_place.reparent(self, true)
+		
+	match placed_dir:
+		Direction.RIGHT, Direction.DOWN:
+			domino_to_place.rotation_degrees = flip_rot if needs_flip else base_rot
+		Direction.LEFT, Direction.UP:
+			domino_to_place.rotation_degrees = base_rot if needs_flip else flip_rot
 	
-	domino_to_place.rotation_degrees = (flip_rot if not needs_flip else base_rot) if is_head else (base_rot if not needs_flip else flip_rot)
 	domino_to_place.position = slot.position
 	area.collision_layer = 0
 	area.collision_mask = 0
