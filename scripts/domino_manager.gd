@@ -28,7 +28,7 @@ var head_val: int = -1
 var tail_val: int = -1
 
 var head_dir: Direction = Direction.LEFT
-var tail_dir: Direction = Direction.LEFT
+var tail_dir: Direction = Direction.RIGHT
 
 func _ready():
 	call_deferred("_place_first_domino")
@@ -110,12 +110,14 @@ func _spawn_slots():
 	var slot_rot = 0 if is_double else 90
 
 	if _can_place(val_a, val_b, head_val):
-		var gap = _half_width(board_head["node"]) + slot_half + SLOT_GAP
-		_make_slot(slot_scene, board_head["node"].position + Vector2(-gap, 0), slot_rot)
+		var end_half = _half_width(board_head["node"])
+		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
+		_make_slot(slot_scene, pos, slot_rot)
 		
 	if _can_place(val_a, val_b, tail_val):
-		var gap = _half_width(board_tail["node"]) + slot_half + SLOT_GAP
-		_make_slot(slot_scene, board_tail["node"].position + Vector2(gap, 0), slot_rot)
+		var end_half = _half_width(board_tail["node"])
+		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
+		_make_slot(slot_scene, pos, slot_rot)
 		
 func _make_slot(slot_scene, pos: Vector2, rot: float):
 	var slot = slot_scene.instantiate()
