@@ -101,11 +101,13 @@ func _out_of_bounds(pos: Vector2) -> bool:
 	var set_margin = boundary.grow(-margin)
 	return not set_margin.has_point(pos)
 	
-func _try_turn(base_pos: Vector2, current_dir: Direction, end_half: float, incoming_half: float) -> Direction:
-	var gap = end_half + incoming_half + SLOT_GAP
-	var candidate_pos = base_pos + _dir_vec(_turn_cw(current_dir)) * gap
+func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float) -> Direction:
+	var new_dir = _turn_cw(current_dir)
+	var new_end_half = _half_width(base_node, new_dir)
+	var gap = new_end_half + incoming_half + SLOT_GAP
+	var candidate_pos = base_node.position + _dir_vec(new_dir) * gap
 	if not _out_of_bounds(candidate_pos):
-		return _turn_cw(current_dir)
+		return new_dir
 	return current_dir
 	
 func _spawn_slots():
@@ -126,7 +128,8 @@ func _spawn_slots():
 		var end_half = _half_width(board_head["node"], dir)
 		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
-			dir = _try_turn(board_head["node"].position, dir, end_half, slot_half)
+			dir = _try_turn(board_head["node"], dir, slot_half)
+			end_half = _half_width(board_head["node"], dir)
 			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
 		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
 		_make_slot(slot_scene, pos, rot, dir, true)
@@ -136,7 +139,8 @@ func _spawn_slots():
 		var end_half = _half_width(board_tail["node"], dir)
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
-			dir = _try_turn(board_tail["node"].position, dir, end_half, slot_half)
+			dir = _try_turn(board_tail["node"], dir, slot_half)
+			end_half = _half_width(board_tail["node"], dir)
 			pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
 		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
 		_make_slot(slot_scene, pos, rot, dir, false)
