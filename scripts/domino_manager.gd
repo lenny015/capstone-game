@@ -101,11 +101,11 @@ func _out_of_bounds(pos: Vector2) -> bool:
 	var set_margin = boundary.grow(-margin)
 	return not set_margin.has_point(pos)
 	
-func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float) -> Direction:
+func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float, old_dir_nudge: float = 0.0) -> Direction:
 	var new_dir = _turn_cw(current_dir)
 	var new_end_half = _half_width(base_node, new_dir)
 	var gap = new_end_half + incoming_half + SLOT_GAP
-	var candidate_pos = base_node.position + _dir_vec(new_dir) * gap
+	var candidate_pos = base_node.position + _dir_vec(new_dir) * gap + _dir_vec(current_dir) * old_dir_nudge
 	if not _out_of_bounds(candidate_pos):
 		return new_dir
 	return current_dir
@@ -128,14 +128,15 @@ func _spawn_slots():
 		var end_half = _half_width(board_head["node"], dir)
 		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
-			var turned_dir = _try_turn(board_head["node"], dir, slot_half)
+			var head_area = board_head["node"].get_node("Area2D")
+			var nudge = TILE_H / 4.0 if not head_area.is_double() else 0.0
+			var turned_dir = _try_turn(board_head["node"], dir, slot_half, nudge)
 			if turned_dir != dir:
 				dir = turned_dir
 				end_half = _half_width(board_head["node"], dir)
 				pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
-				var head_area = board_head["node"].get_node("Area2D")
 				if not head_area.is_double():
-					pos += _dir_vec(head_dir) * (TILE_H / 4.0)
+					pos += _dir_vec(head_dir) * nudge
 		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
 		_make_slot(slot_scene, pos, rot, dir, true)
 
@@ -144,14 +145,15 @@ func _spawn_slots():
 		var end_half = _half_width(board_tail["node"], dir)
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
-			var turned_dir = _try_turn(board_tail["node"], dir, slot_half)
+			var tail_area = board_tail["node"].get_node("Area2D")
+			var nudge = TILE_H / 4.0 if not tail_area.is_double() else 0.0
+			var turned_dir = _try_turn(board_tail["node"], dir, slot_half, nudge)
 			if turned_dir != dir:
 				dir = turned_dir
 				end_half = _half_width(board_tail["node"], dir)
 				pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
-				var tail_area = board_tail["node"].get_node("Area2D")
 				if not tail_area.is_double():
-					pos += _dir_vec(tail_dir) * (TILE_H / 4.0)
+					pos += _dir_vec(tail_dir) * nudge
 		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
 		_make_slot(slot_scene, pos, rot, dir, false)
 		
