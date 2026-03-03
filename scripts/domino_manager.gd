@@ -128,20 +128,30 @@ func _spawn_slots():
 		var end_half = _half_width(board_head["node"], dir)
 		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
-			dir = _try_turn(board_head["node"], dir, slot_half)
-			end_half = _half_width(board_head["node"], dir)
-			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+			var turned_dir = _try_turn(board_head["node"], dir, slot_half)
+			if turned_dir != dir:
+				dir = turned_dir
+				end_half = _half_width(board_head["node"], dir)
+				pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+				var head_area = board_head["node"].get_node("Area2D")
+				if not head_area.is_double():
+					pos += _dir_vec(head_dir) * (TILE_H / 4.0)
 		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
 		_make_slot(slot_scene, pos, rot, dir, true)
-		
+
 	if _can_place(val_a, val_b, tail_val):
 		var dir = tail_dir
 		var end_half = _half_width(board_tail["node"], dir)
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
 		if _out_of_bounds(pos):
-			dir = _try_turn(board_tail["node"], dir, slot_half)
-			end_half = _half_width(board_tail["node"], dir)
-			pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+			var turned_dir = _try_turn(board_tail["node"], dir, slot_half)
+			if turned_dir != dir:
+				dir = turned_dir
+				end_half = _half_width(board_tail["node"], dir)
+				pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+				var tail_area = board_tail["node"].get_node("Area2D")
+				if not tail_area.is_double():
+					pos += _dir_vec(tail_dir) * (TILE_H / 4.0)
 		var rot = slot_rot if (dir == Direction.LEFT or dir == Direction.RIGHT) else slot_rot + 90
 		_make_slot(slot_scene, pos, rot, dir, false)
 		
