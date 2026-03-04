@@ -23,6 +23,10 @@ anchor_mode = 0
 [node name="DominoManager" type="Node2D" parent="."]
 script = ExtResource("1_tqoos")
 
+[node name="BoardRoot" type="Node2D" parent="DominoManager"]
+position = Vector2(240, 135)
+scale = Vector2(0.75, 0.75)
+
 [node name="PlayerHand" type="Node2D" parent="."]
 script = ExtResource("2_3wu0g")
 

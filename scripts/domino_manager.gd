@@ -3,6 +3,7 @@ extends Node2D
 @onready var boneyard = $"../Boneyard"
 @onready var player_hand = $"../PlayerHand"
 @onready var boundary_node = $"../Boundary"
+@onready var board_root = $"BoardRoot"
 
 enum Direction { RIGHT, LEFT, DOWN, UP }
 
@@ -52,7 +53,7 @@ func _place_first_domino():
 		
 	var values = boneyard.domino_pool.pop_back()
 	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
-	add_child(new_domino)
+	board_root.add_child(new_domino)
 	new_domino.position = get_viewport().size / 2
 	
 	var domino_area = new_domino.get_node("Area2D")
@@ -159,7 +160,7 @@ func _spawn_slots():
 		
 func _make_slot(slot_scene, pos: Vector2, rot: float, dir, is_head: bool):
 	var slot = slot_scene.instantiate()
-	add_child(slot)
+	board_root.add_child(slot)
 	slot.rotation_degrees = rot
 	slot.position = pos
 	
@@ -195,8 +196,8 @@ func _on_slot_clicked(slot):
 	var base_rot = 90 if is_double == is_vertical else 0
 	var flip_rot = base_rot + 180
 	
-	if domino_to_place.get_parent() != self:
-		domino_to_place.reparent(self, true)
+	if domino_to_place.get_parent() != board_root:
+		domino_to_place.reparent(board_root, false)
 		
 	match placed_dir:
 		Direction.RIGHT, Direction.UP:
