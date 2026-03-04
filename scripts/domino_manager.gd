@@ -227,6 +227,7 @@ func _on_slot_clicked(slot):
 		board_tail = entry
 
 	_clear_slots()
+	GameState.end_turn()
 		
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -247,6 +248,8 @@ func _process(_delta):
 			lift_domino(hovered_domino, HOVER_OFFSET)
 
 func toggle_selection(domino: Node2D):
+	if not GameState.is_player_turn():
+		return
 	if selected_domino == domino:
 		deselect_domino()
 	else:
