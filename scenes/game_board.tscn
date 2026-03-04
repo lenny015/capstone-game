@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=6 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
 [ext_resource type="PackedScene" uid="uid://byji2xvai8u7w" path="res://scenes/boneyard.tscn" id="3_mq2xb"]
+[ext_resource type="Script" uid="uid://c23hm0aciyhe4" path="res://scripts/pause_menu.gd" id="4_pausemenu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
 size = Vector2(245, 249.5)
@@ -35,3 +36,76 @@ collision_mask = 128
 position = Vector2(960, 540)
 scale = Vector2(6.5, 6.5)
 shape = SubResource("RectangleShape2D_0jtfi")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="PauseButton" type="Button" parent="HUD"]
+process_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -64.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 64.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 22
+text = "| |"
+
+[node name="PauseMenu" type="Control" parent="HUD"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_pausemenu")
+
+[node name="Overlay" type="ColorRect" parent="HUD/PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/PauseMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -96.0
+offset_right = 150.0
+offset_bottom = 96.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="PausedLabel" type="Label" parent="HUD/PauseMenu/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 52
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="HUD/PauseMenu/VBoxContainer"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Resume"
+
+[node name="ExitToMenuButton" type="Button" parent="HUD/PauseMenu/VBoxContainer"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Exit to Main Menu"
+
+[connection signal="pressed" from="HUD/PauseButton" to="HUD/PauseMenu" method="open"]
+[connection signal="pressed" from="HUD/PauseMenu/VBoxContainer/ResumeButton" to="HUD/PauseMenu" method="_on_resume_pressed"]
+[connection signal="pressed" from="HUD/PauseMenu/VBoxContainer/ExitToMenuButton" to="HUD/PauseMenu" method="_on_exit_to_menu_pressed"]
