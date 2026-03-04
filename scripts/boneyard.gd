@@ -10,6 +10,8 @@ var domino_pool: Array = []
 
 func _ready():
 	_generate_all_dominoes()
+	GameState.start_game(domino_pool.duplicate())
+	_spawn_player_hand()
 
 func _generate_all_dominoes():
 	domino_pool.clear()
@@ -17,6 +19,10 @@ func _generate_all_dominoes():
 		for right in range(left, 7):
 			domino_pool.append([left, right])
 	domino_pool.shuffle()
+	
+func _spawn_player_hand():
+	for values in GameState.player_hand_data:
+		player_hand.add_domino_to_hand_from_values(values[0], values[1])
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -36,4 +42,5 @@ func draw_domino():
 		return
 		
 	var values = domino_pool.pop_back()
+	GameState.add_to_hand(GameState.Turn.PLAYER, values)
 	player_hand.add_domino_to_hand_from_values(values[0], values[1])

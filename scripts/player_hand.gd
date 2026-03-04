@@ -43,6 +43,8 @@ func add_domino_to_hand(domino):
 	update_hand_positions()
 	
 func remove_domino_from_hand(domino: Node2D):
+	var area = domino.get_node("Area2D")
+	GameState.remove_from_hand(GameState.Turn.PLAYER, [area.left_val, area.right_val])
 	player_hand.erase(domino)
 	domino_manager.domino_original_pos.erase(domino)
 	update_hand_positions()
