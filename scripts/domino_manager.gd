@@ -45,7 +45,10 @@ func _make_board_node(domino_node):
 func _setup_boundary():
 	var shape = boundary_node.get_node("CollisionShape2D")
 	var shape_size = shape.shape.size * shape.global_transform.get_scale()
-	boundary = Rect2(shape.global_position - shape_size / 2.0, shape_size)
+	var world_rect = Rect2(shape.global_position - shape_size / 2.0, shape_size)
+	var top_left = board_root.to_local(world_rect.position)
+	var bottom_right = board_root.to_local(world_rect.position + world_rect.size)
+	boundary = Rect2(top_left, bottom_right - top_left)
 
 func _place_first_domino():
 	if boneyard.domino_pool.is_empty():
@@ -54,7 +57,7 @@ func _place_first_domino():
 	var values = boneyard.domino_pool.pop_back()
 	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
 	board_root.add_child(new_domino)
-	new_domino.position = get_viewport().size / 2
+	new_domino.position = board_root.to_local(get_viewport().size / 2)
 	
 	var domino_area = new_domino.get_node("Area2D")
 	domino_area.set_values(values[0], values[1])
@@ -184,7 +187,7 @@ func _on_slot_clicked(slot):
 
 	var domino_to_place = selected_domino
 	var is_head = slot.get_node("Area2D").is_head
-	var placed_dir =slot.get_node("Area2D").dir
+	var placed_dir = slot.get_node("Area2D").dir
 	var area = domino_to_place.get_node("Area2D")
 	
 	var end_val = head_val if is_head else tail_val

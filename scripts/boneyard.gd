@@ -1,6 +1,5 @@
 extends Node2D
 
-const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
 const MAX_HAND_SIZE = 7
 
 var domino_pool: Array = []

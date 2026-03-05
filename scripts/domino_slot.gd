@@ -1,7 +1,5 @@
 extends Area2D
 
-signal slot_clicked(slot)
-
 var dir
 var is_head: bool
 
