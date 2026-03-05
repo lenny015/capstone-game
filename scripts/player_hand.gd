@@ -1,6 +1,5 @@
 extends Node2D
 
-const HAND_COUNT = 7
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
 const DOMINO_WIDTH = 80
 
@@ -15,9 +14,6 @@ func _ready():
 	hand_y_pos = get_viewport().size.y * 0.92
 
 func add_domino_to_hand_from_values(left: int, right: int):
-	if player_hand.size() >= HAND_COUNT:
-		return
-
 	var domino_scene = preload(DOMINO_SCENE_PATH)
 	var new_domino = domino_scene.instantiate()
 	domino_manager.add_child(new_domino)

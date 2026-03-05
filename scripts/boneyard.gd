@@ -1,11 +1,9 @@
 extends Node2D
 
-const MAX_HAND_SIZE = 7
-
 var domino_pool: Array = []
 
 @onready var player_hand = get_node("../PlayerHand")
-@onready var area_2d = $Area2D
+@onready var domino_manager = get_node("../DominoManager")
 
 func _ready():
 	_generate_all_dominoes()
@@ -27,8 +25,17 @@ func _spawn_player_hand():
 	for values in GameState.player_hand_data:
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
 
+func _player_has_valid_move() -> bool:
+	return GameState.has_valid_move(
+		GameState.Turn.PLAYER,
+		domino_manager.head_val,
+		domino_manager.tail_val
+	)
+
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if not GameState.is_player_turn():
+			return
 		var space = get_world_2d().direct_space_state
 		var params = PhysicsPointQueryParameters2D.new()
 		params.position = get_global_mouse_position()
@@ -39,11 +46,15 @@ func _input(event):
 			draw_domino()
 		
 func draw_domino():
+	if _player_has_valid_move():
+		return	
 	if domino_pool.is_empty():
-		return
-	if player_hand.player_hand.size() >= MAX_HAND_SIZE:
+		GameState.end_turn()
 		return
 		
 	var values = domino_pool.pop_back()
 	GameState.add_to_hand(GameState.Turn.PLAYER, values)
 	player_hand.add_domino_to_hand_from_values(values[0], values[1])
+	
+	if domino_pool.is_empty():
+		visible = false
