@@ -7,7 +7,7 @@ signal hand_changed(whose_turn: Turn)
 
 var current_turn: Turn = Turn.PLAYER
 
-var player_hand_data: Array = []   
+var player_hand_data: Array = []
 var opponent_hand_data: Array = []
 
 func start_game(domino_pool: Array) -> void:
@@ -24,6 +24,9 @@ func start_game(domino_pool: Array) -> void:
 		if domino_pool.is_empty():
 			break
 		opponent_hand_data.append(domino_pool.pop_back())
+
+	hand_changed.emit(Turn.PLAYER)
+	hand_changed.emit(Turn.OPPONENT)
 
 func end_turn() -> void:
 	if current_turn == Turn.PLAYER:

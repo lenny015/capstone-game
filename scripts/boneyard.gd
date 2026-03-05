@@ -11,6 +11,10 @@ var domino_pool: Array = []
 func _ready():
 	_generate_all_dominoes()
 	GameState.start_game(domino_pool.duplicate())
+	for values in GameState.player_hand_data:
+		domino_pool.erase(values)
+	for values in GameState.opponent_hand_data:
+		domino_pool.erase(values)
 	_spawn_player_hand()
 
 func _generate_all_dominoes():
