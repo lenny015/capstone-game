@@ -1,11 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=7 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
 [ext_resource type="PackedScene" uid="uid://byji2xvai8u7w" path="res://scenes/boneyard.tscn" id="3_mq2xb"]
 [ext_resource type="Script" uid="uid://c23hm0aciyhe4" path="res://scripts/pause_menu.gd" id="4_pausemenu"]
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
-[ext_resource type="Script" uid="uid://cvva5620b2fy5" path="res://scripts/opponent_ai.gd" id="6_qmxhh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
 size = Vector2(245, 249.5)
@@ -114,9 +113,6 @@ custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Exit to Main Menu"
-
-[node name="OpponentAI" type="Node" parent="."]
-script = ExtResource("6_qmxhh")
 
 [connection signal="pressed" from="HUD/PauseButton" to="HUD/PauseMenu" method="open"]
 [connection signal="pressed" from="HUD/PauseMenu/VBoxContainer/ResumeButton" to="HUD/PauseMenu" method="_on_resume_pressed"]
