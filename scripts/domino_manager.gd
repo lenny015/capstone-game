@@ -230,7 +230,9 @@ func _on_slot_clicked(slot):
 		board_tail = entry
 
 	_clear_slots()
-	GameState.end_turn()
+	GameState.reset_passes()
+	if not GameState.check_win_condition():
+		GameState.end_turn()
 		
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

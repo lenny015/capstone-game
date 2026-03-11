@@ -9,6 +9,7 @@ var current_turn: Turn = Turn.PLAYER
 
 var player_hand_data: Array = []
 var opponent_hand_data: Array = []
+var consecutive_passes: int = 0
 
 func start_game(domino_pool: Array) -> void:
 	player_hand_data.clear()
@@ -25,6 +26,7 @@ func start_game(domino_pool: Array) -> void:
 			break
 		opponent_hand_data.append(domino_pool.pop_back())
 
+	consecutive_passes = 0
 	hand_changed.emit(Turn.PLAYER)
 	hand_changed.emit(Turn.OPPONENT)
 
@@ -62,3 +64,33 @@ func has_valid_move(turn: Turn, head_val: int, tail_val: int) -> bool:
 		if domino[0] == tail_val or domino[1] == tail_val:
 			return true
 	return false
+	
+func check_win_condition() -> bool:
+	if player_hand_data.is_empty():
+		print("GAME OVER — Player wins (empty hand)")
+		return true
+	if opponent_hand_data.is_empty():
+		print("GAME OVER — Opponent wins (empty hand)")
+		return true
+	return false
+	
+func pass_turn() -> void:
+	consecutive_passes += 1
+	if consecutive_passes >= 2:
+		var player_pips = 0
+		for d in player_hand_data:
+			player_pips += d[0] + d[1]
+		var opponent_pips = 0
+		for d in opponent_hand_data:
+			opponent_pips += d[0] + d[1]
+		if player_pips < opponent_pips:
+			print("GAME OVER — Player wins (blocked, fewer pips: %d vs %d)" % [player_pips, opponent_pips])
+		elif opponent_pips < player_pips:
+			print("GAME OVER — Opponent wins (blocked, fewer pips: %d vs %d)" % [opponent_pips, player_pips])
+		else:
+			print("GAME OVER — Draw (blocked, equal pips: %d)" % player_pips)
+		return
+	end_turn()
+	
+func reset_passes():
+	consecutive_passes = 0

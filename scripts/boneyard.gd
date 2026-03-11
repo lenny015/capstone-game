@@ -49,7 +49,7 @@ func draw_domino():
 	if _player_has_valid_move():
 		return	
 	if domino_pool.is_empty():
-		GameState.end_turn()
+		GameState.pass_turn()
 		return
 		
 	var values = domino_pool.pop_back()
