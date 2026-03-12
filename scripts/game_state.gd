@@ -4,8 +4,10 @@ enum Turn { PLAYER, OPPONENT }
 
 signal turn_changed(whose_turn: Turn)
 signal hand_changed(whose_turn: Turn)
+signal game_over(winner: Turn, reason, String)
 
 var current_turn: Turn = Turn.PLAYER
+var game_active: bool = false
 
 var player_hand_data: Array = []
 var opponent_hand_data: Array = []
@@ -27,6 +29,8 @@ func start_game(domino_pool: Array) -> void:
 		opponent_hand_data.append(domino_pool.pop_back())
 
 	consecutive_passes = 0
+	game_active = true
+	
 	hand_changed.emit(Turn.PLAYER)
 	hand_changed.emit(Turn.OPPONENT)
 
@@ -67,10 +71,12 @@ func has_valid_move(turn: Turn, head_val: int, tail_val: int) -> bool:
 	
 func check_win_condition() -> bool:
 	if player_hand_data.is_empty():
-		print("GAME OVER — Player wins (empty hand)")
+		game_active = false
+		game_over.emit(Turn.PLAYER, "empty_hand")
 		return true
 	if opponent_hand_data.is_empty():
-		print("GAME OVER — Opponent wins (empty hand)")
+		game_active = false
+		game_over.emit(Turn.OPPONENT, "empty_hand")
 		return true
 	return false
 	
