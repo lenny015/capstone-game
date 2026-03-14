@@ -47,6 +47,8 @@ func _on_game_over(winner: GameState.Turn, reason: String):
 	game_over_banner.visible = true
 	var tween = get_tree().create_tween()
 	tween.tween_property(game_over_banner, "modulate:a", 1.0, FADE_DURATION)
+	
+	tween.tween_callback(_fade_out_board)
 		
 func _set_banner_color(color: Color):
 	var stylebox = game_over_banner.get_theme_stylebox("panel") as StyleBoxFlat
@@ -76,3 +78,8 @@ func _set_border_color(panel: Panel, color: Color):
 	if not stylebox:
 		return
 	stylebox.border_color = color
+	
+func _fade_out_board():
+	var board = get_node("../DominoManager/BoardRoot")
+	var tween = get_tree().create_tween()
+	tween.tween_property(board, "modulate:a", 0.0, 0.6)
