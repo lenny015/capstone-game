@@ -4,7 +4,7 @@ enum Turn { PLAYER, OPPONENT }
 
 signal turn_changed(whose_turn: Turn)
 signal hand_changed(whose_turn: Turn)
-signal game_over(winner: Turn, reason, String)
+signal game_over(winner: Turn, reason: String)
 
 var current_turn: Turn = Turn.PLAYER
 var game_active: bool = false
