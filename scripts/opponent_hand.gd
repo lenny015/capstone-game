@@ -2,10 +2,14 @@ extends Node2D
 
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
 const DOMINO_WIDTH = 80
+const BG_PADDING_X = 50
+const BG_HEIGHT = 165
 
 var opponent_hand = []
 var center_screen_x
 var hand_y_pos
+
+@onready var hand_bg = $OpponentHandBackground
 
 func _ready():
 	center_screen_x = get_viewport().size.x / 2
@@ -53,3 +57,17 @@ func _update_positions():
 		var x = center_screen_x + i * DOMINO_WIDTH - total_width / 2.0
 		var tween = get_tree().create_tween()
 		tween.tween_property(opponent_hand[i], "position", Vector2(x, hand_y_pos), 0.2)
+	_update_background()
+		
+func _update_background():
+	if opponent_hand.is_empty():
+		hand_bg.visible = false
+		return
+	hand_bg.visible = true
+	var total_width = (opponent_hand.size() - 1) * DOMINO_WIDTH + BG_PADDING_X * 2
+	var bg_x = center_screen_x - total_width / 2.0
+	var bg_y = hand_y_pos - BG_HEIGHT / 2.0
+	var tween = get_tree().create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(hand_bg, "size", Vector2(total_width, BG_HEIGHT), 0.2)
+	tween.tween_property(hand_bg, "position", Vector2(bg_x, bg_y), 0.2)

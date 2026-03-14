@@ -51,6 +51,13 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_cmh4g")
 [node name="OpponentHand" type="Node2D" parent="."]
 script = ExtResource("5_opphand")
 
+[node name="OpponentHandBackground" type="Panel" parent="OpponentHand"]
+z_index = -1
+z_as_relative = false
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cmh4g")
+
 [node name="Boneyard" parent="." instance=ExtResource("3_mq2xb")]
 
 [node name="Boundary" type="Area2D" parent="."]
