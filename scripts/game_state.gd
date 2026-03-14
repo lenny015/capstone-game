@@ -90,11 +90,11 @@ func pass_turn() -> void:
 		for d in opponent_hand_data:
 			opponent_pips += d[0] + d[1]
 		if player_pips < opponent_pips:
-			print("GAME OVER — Player wins (blocked, fewer pips: %d vs %d)" % [player_pips, opponent_pips])
+			game_over.emit(Turn.PLAYER, "blocked")
 		elif opponent_pips < player_pips:
-			print("GAME OVER — Opponent wins (blocked, fewer pips: %d vs %d)" % [opponent_pips, player_pips])
+			game_over.emit(Turn.OPPONENT, "blocked")
 		else:
-			print("GAME OVER — Draw (blocked, equal pips: %d)" % player_pips)
+			game_over.emit(Turn.PLAYER, "draw")
 		return
 	end_turn()
 	

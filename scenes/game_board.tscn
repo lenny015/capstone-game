@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=10 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
 [ext_resource type="PackedScene" uid="uid://byji2xvai8u7w" path="res://scenes/boneyard.tscn" id="3_mq2xb"]
 [ext_resource type="Script" uid="uid://c23hm0aciyhe4" path="res://scripts/pause_menu.gd" id="4_pausemenu"]
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
+[ext_resource type="Script" uid="uid://dpu02tk6h0rly" path="res://scripts/hud.gd" id="5_qmxhh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmh4g"]
 bg_color = Color(0, 0, 0, 0.3019608)
@@ -13,8 +14,15 @@ corner_radius_top_right = 30
 corner_radius_bottom_right = 30
 corner_radius_bottom_left = 30
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmxhh"]
+bg_color = Color(0, 0, 0, 0.3019608)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
-size = Vector2(245, 249.5)
+size = Vector2(245, 111.38461)
 
 [node name="Game Board" type="Node2D"]
 
@@ -56,7 +64,7 @@ z_index = -1
 z_as_relative = false
 offset_right = 40.0
 offset_bottom = 40.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_cmh4g")
+theme_override_styles/panel = SubResource("StyleBoxFlat_qmxhh")
 
 [node name="Boneyard" parent="." instance=ExtResource("3_mq2xb")]
 
@@ -65,11 +73,13 @@ collision_layer = 128
 collision_mask = 128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Boundary"]
-position = Vector2(960, 540)
+position = Vector2(960, 544)
 scale = Vector2(6.5, 6.5)
 shape = SubResource("RectangleShape2D_0jtfi")
 
 [node name="HUD" type="CanvasLayer" parent="."]
+visible = false
+script = ExtResource("5_qmxhh")
 
 [node name="PauseButton" type="Button" parent="HUD"]
 process_mode = 3
