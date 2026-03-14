@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=11 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
@@ -23,6 +23,13 @@ corner_radius_bottom_left = 30
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
 size = Vector2(245, 111.38461)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8nsfp"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [node name="Game Board" type="Node2D"]
 
@@ -78,8 +85,31 @@ scale = Vector2(6.5, 6.5)
 shape = SubResource("RectangleShape2D_0jtfi")
 
 [node name="HUD" type="CanvasLayer" parent="."]
-visible = false
 script = ExtResource("5_qmxhh")
+
+[node name="GameOverBanner" type="Panel" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 609.0
+offset_top = 504.0
+offset_right = -611.0
+offset_bottom = -496.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8nsfp")
+
+[node name="GameOverLabel" type="Label" parent="HUD/GameOverBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PauseButton" type="Button" parent="HUD"]
 process_mode = 3
@@ -96,6 +126,7 @@ text = "| |"
 
 [node name="PauseMenu" type="Control" parent="HUD"]
 process_mode = 3
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
