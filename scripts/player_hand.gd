@@ -2,12 +2,15 @@ extends Node2D
 
 const DOMINO_SCENE_PATH = "res://scenes/domino.tscn"
 const DOMINO_WIDTH = 80
+const BG_PADDING_X = 50
+const BG_HEIGHT = 165
 
 var player_hand = []
 var center_screen_x
 var hand_y_pos
 
 @onready var domino_manager = $"../DominoManager"
+@onready var hand_bg = $PlayerHandBackground
 
 func _ready():
 	center_screen_x = get_viewport().size.x / 2
@@ -50,6 +53,7 @@ func update_hand_positions():
 		var new_pos = Vector2(calc_domino_pos(i), hand_y_pos)
 		var domino = player_hand[i]
 		animate_card_to_position(domino, new_pos)
+	_update_background()
 		
 func calc_domino_pos(index):
 	var total_width = (player_hand.size() -1) * DOMINO_WIDTH
@@ -60,3 +64,16 @@ func animate_card_to_position(domino, new_pos):
 	var tween = get_tree().create_tween()
 	tween.tween_property(domino, "position", new_pos, 0.2)
 	tween.tween_callback(func(): domino_manager.store_original_position(domino))
+	
+func _update_background():
+	if player_hand.is_empty():
+		hand_bg.visible = false
+		return
+	hand_bg.visible = true
+	var total_width = (player_hand.size() - 1) * DOMINO_WIDTH + BG_PADDING_X * 2
+	var bg_x = center_screen_x - total_width / 2.0
+	var bg_y = hand_y_pos - BG_HEIGHT / 2.0
+	var tween = get_tree().create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(hand_bg, "size", Vector2(total_width, BG_HEIGHT), 0.2)
+	tween.tween_property(hand_bg, "position", Vector2(bg_x, bg_y), 0.2)

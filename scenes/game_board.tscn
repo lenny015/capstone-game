@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=8 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
@@ -6,12 +6,21 @@
 [ext_resource type="Script" uid="uid://c23hm0aciyhe4" path="res://scripts/pause_menu.gd" id="4_pausemenu"]
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmh4g"]
+bg_color = Color(0, 0, 0, 0.3019608)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
 size = Vector2(245, 249.5)
 
 [node name="Game Board" type="Node2D"]
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="."]
+z_index = -3
+z_as_relative = false
 offset_left = -507.0
 offset_top = -491.0
 offset_right = 2551.0
@@ -29,7 +38,15 @@ position = Vector2(240, 135)
 scale = Vector2(0.75, 0.75)
 
 [node name="PlayerHand" type="Node2D" parent="."]
+z_index = 1
 script = ExtResource("2_3wu0g")
+
+[node name="PlayerHandBackground" type="Panel" parent="PlayerHand"]
+z_index = -1
+z_as_relative = false
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cmh4g")
 
 [node name="OpponentHand" type="Node2D" parent="."]
 script = ExtResource("5_opphand")
