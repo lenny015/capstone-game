@@ -33,6 +33,21 @@ func start_game(domino_pool: Array) -> void:
 	
 	hand_changed.emit(Turn.PLAYER)
 	hand_changed.emit(Turn.OPPONENT)
+	
+func find_highest_double() -> Dictionary:
+	var best_val = -1
+	var best_turn = Turn.PLAYER
+	for domino in player_hand_data:
+		if domino[0] == domino[1] and domino[0] > best_val:
+			best_val = domino[0]
+			best_turn = Turn.PLAYER
+	for domino in opponent_hand_data:
+		if domino[0] == domino[1] and domino[0] > best_val:
+			best_val = domino[0]
+			best_turn = Turn.OPPONENT
+	if best_val == -1:
+		return {}
+	return {"values": [best_val, best_val], "turn": best_turn}
 
 func end_turn() -> void:
 	if current_turn == Turn.PLAYER:

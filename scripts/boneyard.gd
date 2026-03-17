@@ -13,6 +13,7 @@ func _ready():
 	for values in GameState.opponent_hand_data:
 		domino_pool.erase(values)
 	_spawn_player_hand()
+	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
 
 func _generate_all_dominoes():
 	domino_pool.clear()

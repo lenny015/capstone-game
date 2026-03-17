@@ -51,26 +51,52 @@ func _setup_boundary():
 	boundary = Rect2(top_left, bottom_right - top_left)
 
 func _place_first_domino():
-	if boneyard.domino_pool.is_empty():
+	await get_tree().create_timer(1.0).timeout
+	var result = GameState.find_highest_double()
+	if result.is_empty():
+		while not boneyard.domino_pool.is_empty():
+			var drawn = boneyard.domino_pool.pop_back()
+			if drawn[0] == drawn[1]:
+				_spawn_first_tile(drawn, GameState.Turn.PLAYER, false)
+				return
 		return
-		
-	var values = boneyard.domino_pool.pop_back()
+	_spawn_first_tile(result["values"], result["turn"], true)
+	
+func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
 	board_root.add_child(new_domino)
 	new_domino.position = board_root.to_local(get_viewport().size / 2)
-	
+ 
 	var domino_area = new_domino.get_node("Area2D")
 	domino_area.set_values(values[0], values[1])
 	domino_area.collision_layer = 0
 	domino_area.collision_mask = 0
-	new_domino.rotation_degrees = 0 if domino_area.is_double() else 90
-
+	new_domino.rotation_degrees = 0
+ 
 	head_val = domino_area.left_val
 	tail_val = domino_area.right_val
-
+ 
 	var entry = _make_board_node(new_domino)
 	board_head = entry
 	board_tail = entry
+ 
+	if from_hand:
+		if holder == GameState.Turn.PLAYER:
+			for domino in player_hand.player_hand:
+				var area = domino.get_node("Area2D")
+				if area.left_val == values[0] and area.right_val == values[1]:
+					domino.queue_free()
+					player_hand.player_hand.erase(domino)
+					domino_original_pos.erase(domino)
+					player_hand.update_hand_positions()
+					break
+			GameState.remove_from_hand(GameState.Turn.PLAYER, values)
+			GameState.current_turn = GameState.Turn.OPPONENT
+			GameState.end_turn()
+		else:
+			var opp_hand = get_node("../OpponentHand")
+			opp_hand.remove_domino(values[0], values[1])
+			GameState.current_turn = GameState.Turn.PLAYER
 	
 func _half_width(domino_node: Node2D, dir: Direction) -> float:
 	var r = int(domino_node.rotation_degrees) % 180
