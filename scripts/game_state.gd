@@ -8,6 +8,8 @@ signal game_over(winner: Turn, reason: String)
 
 var current_turn: Turn = Turn.PLAYER
 var game_active: bool = false
+var multiplayer_mode: bool = false
+var is_host: bool = false
 
 var player_hand_data: Array = []
 var opponent_hand_data: Array = []
