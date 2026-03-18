@@ -88,6 +88,7 @@ shape = SubResource("RectangleShape2D_0jtfi")
 script = ExtResource("5_qmxhh")
 
 [node name="GameOverBanner" type="Panel" parent="HUD"]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
