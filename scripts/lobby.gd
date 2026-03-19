@@ -94,11 +94,15 @@ func _on_peer_connected(_peer_id: int):
 	_add_chat_message("System", "Player connected")
 	_refresh_player_list()
  
-func _on_peer_disconnected(_peer_id: int):
+func _on_peer_disconnected(peer_id: int):
 	_add_chat_message("System", "Player disconnected")
 	ready_states.clear()
 	start_button.visible = false
 	_refresh_player_list()
+	
+	if not is_host and peer_id == 1:
+		await get_tree().create_timer(1.5).timeout
+		_return_to_menu()
 
 # Buttons
 
@@ -136,10 +140,16 @@ func _on_start_pressed():
 	pass
 
 func _on_leave_pressed():
+	_return_to_menu()
+	
+func _return_to_menu():
 	Steam.leaveLobby(SteamManager.lobby_id)
 	SteamManager.lobby_id = 0
 	multiplayer.multiplayer_peer = null
+	GameState.multiplayer_mode = false
+	GameState.is_host = false
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	
 
 # Chat
 
