@@ -24,6 +24,8 @@ func _ready():
 	SteamManager.lobby_join_failed.connect(_on_lobby_join_failed)
 	Steam.lobby_message.connect(_on_lobby_message)
 	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
+	multiplayer.peer_connected.connect(_on_peer_connected)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
 # Prelobby
 
@@ -80,7 +82,6 @@ func _refresh_player_list():
 		var ready_check = ready_states.get(steam_id, false)
 		var label = Label.new()
 		label.text = "%s  %s" % [player_name, "[READY]" if ready_check else "[NOT READY]"]
-		player_list.add_child(label)
 		label.modulate = Color(0.4, 1.0, 0.4) if ready_check else Color(1, 1, 1)
 		player_list.add_child(label)
 
