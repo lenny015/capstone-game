@@ -16,10 +16,8 @@ const LOBBY_MAX_MEMBERS = 2
 func _ready():
 	var init = Steam.steamInitEx()
 	if init["status"] != Steam.STEAM_API_INIT_RESULT_OK:
-		print("Steam not available: ", init)
 		return
 	steam_available = true
-	print("Steam OK: ", Steam.getPersonaName())
 	Steam.lobby_created.connect(_on_lobby_created)
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.lobby_match_list.connect(_on_lobby_match_list)
@@ -47,13 +45,11 @@ func create_lobby():
 	
 func _on_lobby_created(result: int, id: int):
 	if result != Steam.RESULT_OK:
-		print("Lobby creation failed: ", result)
 		return
 	lobby_id = id
 	var code = lobby_id_to_code(id)
 	Steam.setLobbyData(id, "join_code", code)
 	Steam.setLobbyData(id, "game", "domino")
-	print("Lobby created — ID: %d  Code: %s" % [id, code])
 	lobby_created.emit(id)
  
 
@@ -65,18 +61,15 @@ func join_lobby_by_code(code: String):
 	
 func _on_lobby_match_list(lobbies: Array) -> void:
 	if lobbies.is_empty():
-		print("No lobby found for that code")
 		lobby_join_failed.emit()
 		return
 	Steam.joinLobby(lobbies[0])
 	
 func _on_lobby_joined(id: int, _permissions: int, _locked: bool, response: int) -> void:
 	if response != Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
-		print("Failed to join lobby: ", response)
 		lobby_join_failed.emit()
 		return
 	lobby_id = id
-	print("Joined lobby: ", id)
 	lobby_joined.emit(id)
 	
 
@@ -87,7 +80,6 @@ func start_as_host() -> void:
 	multiplayer.multiplayer_peer = peer
 	GameState.multiplayer_mode = true
 	GameState.is_host = true
-	print("Hosting game")
 	
 func start_as_client(host_steam_id: int) -> void:
 	var peer = SteamMultiplayerPeer.new()
@@ -95,7 +87,6 @@ func start_as_client(host_steam_id: int) -> void:
 	multiplayer.multiplayer_peer = peer
 	GameState.multiplayer_mode = true
 	GameState.is_host = false
-	print("Connecting to host: ", host_steam_id)
 	
 func get_lobby_host_steam_id() -> int:
 	return Steam.getLobbyOwner(lobby_id)
