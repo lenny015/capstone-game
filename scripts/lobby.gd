@@ -1,12 +1,29 @@
 extends Control
 
-@onready var status_label = $VBoxContainer/StatusLabel
-@onready var code_input = $VBoxContainer/CodeInput
+# PreLobby
+@onready var pre_lobby: VBoxContainer = $PreLobby
+@onready var status_label = $PreLobby/StatusLabel
+@onready var code_input = $PreLobby/CodeInput
+
+# Lobby Room
+@onready var lobby_room: CenterContainer = $LobbyRoom
+@onready var code_display: Label = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/CodeDisplay
+@onready var player_list: VBoxContainer = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/PlayerList
+@onready var ready_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton
+@onready var start_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton
+@onready var chat_log: RichTextLabel = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatLog
+@onready var chat_input: LineEdit = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput
+
+var is_host: bool = false
 
 func _ready():
 	SteamManager.lobby_created.connect(_on_lobby_created)
 	SteamManager.lobby_joined.connect(_on_lobby_joined)
 	SteamManager.lobby_join_failed.connect(_on_lobby_join_failed)
+	Steam.lobby_message.connect(_on_lobby_message)
+	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
+
+# Prelobby
 
 func _on_host_pressed():
 	status_label.text = "Creating lobby..."
@@ -17,19 +34,84 @@ func _on_join_pressed():
 	if code.length() != 6:
 		status_label.text = "Enter a valid 6-character code"
 		return
-	status_label.text = "Joining lobby: %s" % code
+	status_label.text = "Joining lobby..."
 	SteamManager.join_lobby_by_code(code)
 
 func _on_back_pressed():
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-	
+
+# Entering Lobby Room
+
 func _on_lobby_created(lobby_id: int):
+	is_host = true
 	var code = SteamManager.lobby_id_to_code(lobby_id)
-	status_label.text = "Lobby created. Code: %s" % code
+	_enter_lobby_room(code)
 
 func _on_lobby_joined(lobby_id: int):
+	if is_host:
+		return
 	var code = SteamManager.lobby_id_to_code(lobby_id)
-	status_label.text = "Joined lobby. Code: %s" % code
-	
+	_enter_lobby_room(code)
+
 func _on_lobby_join_failed():
 	status_label.text = "Could not find that lobby code"
+
+func _enter_lobby_room(code: String):
+	pre_lobby.visible = false
+	lobby_room.visible = true
+	code_display.text = "Join Code: %s" % code
+	start_button.visible = false
+	_refresh_player_list()
+
+# Player List
+
+func _refresh_player_list():
+	for child in player_list.get_children():
+		child.queue_free()
+	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
+	for i in range(member_count):
+		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
+		var player_name = Steam.getFriendPersonaName(steam_id)
+		var label = Label.new()
+		label.text = player_name
+		player_list.add_child(label)
+
+func _on_lobby_chat_update(_lobby_id: int, _changed_id: int, _making_change_id: int, _chat_state: int):
+	_refresh_player_list()
+
+# Buttons
+
+func _on_ready_pressed():
+	pass
+
+func _on_start_pressed():
+	pass
+
+func _on_leave_pressed():
+	Steam.leaveLobby(SteamManager.lobby_id)
+	SteamManager.lobby_id = 0
+	multiplayer.multiplayer_peer = null
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+# Chat
+
+func _on_send_pressed():
+	_send_chat()
+
+func _on_chat_submitted(_text: String):
+	_send_chat()
+
+func _send_chat():
+	var msg = chat_input.text.strip_edges()
+	if msg.is_empty():
+		return
+	chat_input.text = ""
+	Steam.sendLobbyChatMsg(SteamManager.lobby_id, msg)
+
+func _on_lobby_message(_lobby_id: int, user: int, message: String, _type: int):
+	var sender_name = Steam.getFriendPersonaName(user)
+	_add_chat_message(sender_name, message)
+
+func _add_chat_message(sender: String, message: String):
+	var color = "#ffff88" if sender == "System" else "#ffffff"
+	chat_log.append_text("[color=%s][b]%s:[/b][/color] %s\n" % [color, sender, message])
