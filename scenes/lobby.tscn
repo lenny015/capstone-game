@@ -20,7 +20,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.037383538, 0.300902, 0.60443664, 1)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="PreLobby" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -36,45 +36,176 @@ grow_vertical = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="Title" type="Label" parent="VBoxContainer"]
+[node name="Title" type="Label" parent="PreLobby"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 64
 text = "Multiplayer"
 horizontal_alignment = 1
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+[node name="StatusLabel" type="Label" parent="PreLobby"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 20
 text = "Host a game or join with a code"
 horizontal_alignment = 1
 
-[node name="HostButton" type="Button" parent="VBoxContainer"]
+[node name="HostButton" type="Button" parent="PreLobby"]
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Host Game"
 
-[node name="CodeInput" type="LineEdit" parent="VBoxContainer"]
+[node name="CodeInput" type="LineEdit" parent="PreLobby"]
 custom_minimum_size = Vector2(300, 56)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 placeholder_text = "Enter join code"
 max_length = 6
 
-[node name="JoinButton" type="Button" parent="VBoxContainer"]
+[node name="JoinButton" type="Button" parent="PreLobby"]
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Join Game"
 
-[node name="BackButton" type="Button" parent="VBoxContainer"]
+[node name="BackButton" type="Button" parent="PreLobby"]
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Back"
 
-[connection signal="pressed" from="VBoxContainer/HostButton" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="VBoxContainer/JoinButton" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_pressed"]
+[node name="LobbyRoom" type="CenterContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom"]
+custom_minimum_size = Vector2(900, 600)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LeftPanel" type="PanelContainer" parent="LobbyRoom/HBoxContainer"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/HBoxContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="LeftVBox" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LobbyTitle" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Lobby"
+horizontal_alignment = 1
+
+[node name="CodeDisplay" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="HSep1" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+
+[node name="PlayersLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "PLAYERS"
+
+[node name="PlayerList" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="HSep2" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+
+[node name="ReadyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Ready"
+
+[node name="StartButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+visible = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Start Game"
+
+[node name="LeaveLobbyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Leave Lobby"
+
+[node name="RightPanel" type="PanelContainer" parent="LobbyRoom/HBoxContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/HBoxContainer/RightPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ChatVBox" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChatLabel" type="Label" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "CHAT"
+
+[node name="ChatLog" type="RichTextLabel" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+scroll_following = true
+
+[node name="ChatInputRow" type="HBoxContainer" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChatInput" type="LineEdit" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+placeholder_text = "Say something..."
+max_length = 128
+
+[node name="SendButton" type="Button" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Send"
+
+[connection signal="pressed" from="PreLobby/HostButton" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="PreLobby/JoinButton" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="PreLobby/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton" to="." method="_on_ready_pressed"]
+[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/LeaveLobbyButton" to="." method="_on_leave_pressed"]
+[connection signal="text_submitted" from="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput" to="." method="_on_chat_submitted"]
+[connection signal="pressed" from="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/SendButton" to="." method="_on_send_pressed"]
