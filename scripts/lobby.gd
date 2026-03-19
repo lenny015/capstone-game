@@ -15,6 +15,8 @@ extends Control
 @onready var chat_input: LineEdit = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput
 
 var is_host: bool = false
+var is_ready: bool = false
+var ready_states: Dictionary = {}
 
 func _ready():
 	SteamManager.lobby_created.connect(_on_lobby_created)
@@ -45,12 +47,15 @@ func _on_back_pressed():
 func _on_lobby_created(lobby_id: int):
 	is_host = true
 	var code = SteamManager.lobby_id_to_code(lobby_id)
+	SteamManager.start_as_host()
 	_enter_lobby_room(code)
 
 func _on_lobby_joined(lobby_id: int):
 	if is_host:
 		return
 	var code = SteamManager.lobby_id_to_code(lobby_id)
+	var host_id = SteamManager.get_lobby_host_steam_id()
+	SteamManager.start_as_client(host_id)
 	_enter_lobby_room(code)
 
 func _on_lobby_join_failed():
@@ -72,17 +77,60 @@ func _refresh_player_list():
 	for i in range(member_count):
 		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
 		var player_name = Steam.getFriendPersonaName(steam_id)
+		var ready_check = ready_states.get(steam_id, false)
 		var label = Label.new()
-		label.text = player_name
+		label.text = "%s  %s" % [player_name, "[READY]" if ready_check else "[NOT READY]"]
+		player_list.add_child(label)
+		label.modulate = Color(0.4, 1.0, 0.4) if ready_check else Color(1, 1, 1)
 		player_list.add_child(label)
 
 func _on_lobby_chat_update(_lobby_id: int, _changed_id: int, _making_change_id: int, _chat_state: int):
 	_refresh_player_list()
 
+
+# Peer Connection
+
+func _on_peer_connected(_peer_id: int):
+	_add_chat_message("System", "Player connected")
+	_refresh_player_list()
+ 
+func _on_peer_disconnected(_peer_id: int):
+	_add_chat_message("System", "Player disconnected")
+	ready_states.clear()
+	start_button.visible = false
+	_refresh_player_list()
+
 # Buttons
 
 func _on_ready_pressed():
-	pass
+	is_ready = !is_ready
+	ready_button.text = "Unready" if is_ready else "Ready"
+	var my_id = Steam.getSteamID()
+	ready_states[my_id] = is_ready
+	rpc("sync_ready", my_id, is_ready)
+	_refresh_player_list()
+	_check_all_ready()
+	
+@rpc("any_peer", "call_local")
+func sync_ready(steam_id: int, rdy: bool):
+	ready_states[steam_id] = rdy
+	_refresh_player_list()
+	_check_all_ready()
+	
+func _check_all_ready():
+	if not is_host:
+		start_button.visible = false
+		return
+	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
+	if member_count < 2:
+		start_button.visible = false
+		return
+	for i in range(member_count):
+		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
+		if not ready_states.get(steam_id, false):
+			start_button.visible = false
+			return
+	start_button.visible = true
 
 func _on_start_pressed():
 	pass
