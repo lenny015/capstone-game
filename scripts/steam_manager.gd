@@ -41,7 +41,7 @@ func find_lobby_by_code(code: String) -> void:
 func create_lobby():
 	if not steam_available:
 		return
-	Steam.createLobby(Steam.LOBBY_TYPE_FRIENDS_ONLY, LOBBY_MAX_MEMBERS)	
+	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, LOBBY_MAX_MEMBERS)
 	
 func _on_lobby_created(result: int, id: int):
 	if result != Steam.RESULT_OK:

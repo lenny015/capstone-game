@@ -135,18 +135,18 @@ theme_override_constants/separation = 8
 [node name="HSep2" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 
-[node name="ReadyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Ready"
-
 [node name="StartButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 visible = false
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Start Game"
+
+[node name="ReadyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Ready"
 
 [node name="LeaveLobbyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 custom_minimum_size = Vector2(0, 48)
@@ -204,8 +204,8 @@ text = "Send"
 [connection signal="pressed" from="PreLobby/HostButton" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="PreLobby/JoinButton" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="PreLobby/BackButton" to="." method="_on_back_pressed"]
-[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton" to="." method="_on_ready_pressed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton" to="." method="_on_ready_pressed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/LeaveLobbyButton" to="." method="_on_leave_pressed"]
 [connection signal="text_submitted" from="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput" to="." method="_on_chat_submitted"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/SendButton" to="." method="_on_send_pressed"]
