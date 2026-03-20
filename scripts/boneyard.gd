@@ -6,6 +6,12 @@ var domino_pool: Array = []
 @onready var domino_manager = get_node("../DominoManager")
 
 func _ready():
+	if GameState.multiplayer_mode:
+		_ready_multiplayer()
+	else:
+		_ready_singleplayer()
+	
+func _ready_singleplayer():
 	_generate_all_dominoes()
 	GameState.start_game(domino_pool.duplicate())
 	for values in GameState.player_hand_data:
@@ -15,6 +21,28 @@ func _ready():
 	_spawn_player_hand()
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
 
+func _spawn_player_hand():
+	for values in GameState.player_hand_data:
+		player_hand.add_domino_to_hand_from_values(values[0], values[1])
+		
+func _ready_multiplayer():
+	if GameState.is_host:
+		GameState.start_game(domino_pool.duplicate())
+		for values in GameState.player_hand_data:
+			domino_pool.erase(values)
+		for values in GameState.opponent_hand_data:
+			domino_pool.erase(values)
+		_spawn_player_hand()
+		rpc("recieve_hand", GameState.opponent_hand_data)
+		GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+
+@rpc("authority")
+func recieve_hand(hand: Array):
+	GameState.player_hand_data = hand.duplicate()
+	for values in hand:
+		player_hand.add_domino_to_hand_from_values(values[0], values[1])	
+	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+
 func _generate_all_dominoes():
 	domino_pool.clear()
 	for left in range(7):
@@ -22,9 +50,6 @@ func _generate_all_dominoes():
 			domino_pool.append([left, right])
 	domino_pool.shuffle()
 	
-func _spawn_player_hand():
-	for values in GameState.player_hand_data:
-		player_hand.add_domino_to_hand_from_values(values[0], values[1])
 
 func _player_has_valid_move() -> bool:
 	return GameState.has_valid_move(
@@ -49,13 +74,48 @@ func _input(event):
 func draw_domino():
 	if _player_has_valid_move():
 		return	
+	if GameState.multiplayer_mode:
+		if not GameState.is_host:
+			rpc_id(1, "host_draw_for_player")
+			return
+		_perform_draw(GameState.Turn.PLAYER)
+	else:
+		if domino_pool.is_empty():
+			GameState.pass_turn()
+			return
+		var values = domino_pool.pop_back()
+		GameState.add_to_hand(GameState.Turn.PLAYER, values)
+		player_hand.add_domino_to_hand_from_values(values[0], values[1])
+		if domino_pool.is_empty():
+			visible = false
+		
+func _perform_draw(turn: GameState.Turn) -> void:
 	if domino_pool.is_empty():
 		GameState.pass_turn()
 		return
-		
 	var values = domino_pool.pop_back()
-	GameState.add_to_hand(GameState.Turn.PLAYER, values)
-	player_hand.add_domino_to_hand_from_values(values[0], values[1])
-	
+	if turn == GameState.Turn.PLAYER:
+		GameState.add_to_hand(GameState.Turn.PLAYER, values)
+		player_hand.add_domino_to_hand_from_values(values[0], values[1])
+		rpc("sync_opponent_draw_count", GameState.player_hand_data.size())
+	else:
+		GameState.add_to_hand(GameState.Turn.OPPONENT, values)
+		rpc_id(multiplayer.get_remote_sender_id(), "receive_drawn_tile", values)
+		rpc("sync_opponent_draw_count", GameState.opponent_hand_data.size())
 	if domino_pool.is_empty():
 		visible = false
+		
+@rpc("any_peer")
+func host_draw_for_player() -> void:
+	if not GameState.is_host:
+		return
+	_perform_draw(GameState.Turn.OPPONENT)
+	
+@rpc("authority")
+func receive_drawn_tile(values: Array) -> void:
+	GameState.add_to_hand(GameState.Turn.PLAYER, values)
+	player_hand.add_domino_to_hand_from_values(values[0], values[1])
+ 
+@rpc("any_peer", "call_local")
+func sync_opponent_draw_count(_count: int) -> void:
+	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
