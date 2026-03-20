@@ -138,7 +138,12 @@ func _check_all_ready():
 	start_button.visible = true
 
 func _on_start_pressed():
-	pass
+	if is_host:
+		rpc("start_game_rpc")
+		
+@rpc("authority", "call_local")
+func start_game_rpc():
+	get_tree().change_scene_to_file("res://scenes/game_board.tscn")
 
 func _on_leave_pressed():
 	_return_to_menu()
