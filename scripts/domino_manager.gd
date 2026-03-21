@@ -274,7 +274,20 @@ func _on_slot_clicked(slot):
 	_clear_slots()
 	GameState.reset_passes()
 	if not GameState.check_win_condition():
-		GameState.end_turn()
+		if GameState.multiplayer_mode and GameState.is_host:
+			print("host ending turn, broadcasting sync_turn")
+			GameState.end_turn()
+			rpc("sync_turn", int(GameState.current_turn))
+		elif not GameState.multiplayer_mode:
+			GameState.end_turn()
+			
+@rpc("authority")
+func sync_turn(turn: GameState.Turn):
+	print("sync_turn received, turn: %s  is_host: %s" % [turn, GameState.is_host])
+	GameState.current_turn = turn
+	print("about to emit turn_changed")
+	GameState.turn_changed.emit(turn)
+	print("turn_changed emitted, current_turn now: %s  is_player_turn: %s" % [GameState.current_turn, GameState.is_player_turn()])
 		
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

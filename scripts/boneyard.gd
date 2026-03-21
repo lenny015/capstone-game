@@ -104,6 +104,8 @@ func host_draw_for_player() -> void:
 func _do_draw(turn: GameState.Turn) -> void:
 	if domino_pool.is_empty():
 		GameState.pass_turn()
+		if GameState.multiplayer_mode and GameState.is_host:
+			get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
 		return
 	var values = domino_pool.pop_back()
 	if turn == GameState.Turn.PLAYER:
