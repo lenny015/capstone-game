@@ -52,15 +52,31 @@ func _setup_boundary():
 
 func _place_first_domino():
 	await get_tree().create_timer(1.0).timeout
-	var result = GameState.find_highest_double()
-	if result.is_empty():
-		while not boneyard.domino_pool.is_empty():
-			var drawn = boneyard.domino_pool.pop_back()
-			if drawn[0] == drawn[1]:
-				_spawn_first_tile(drawn, GameState.Turn.PLAYER, false)
+	if GameState.multiplayer_mode:
+		if GameState.is_host:
+			var result = GameState.find_highest_double()
+			if result.is_empty():
+				while not boneyard.domino_pool.is_empty():
+					var drawn = boneyard.domino_pool.pop_back()
+					if drawn[0] == drawn[1]:
+						rpc("sync_first_tile", drawn, GameState.Turn.PLAYER, false)
+						return
 				return
-		return
-	_spawn_first_tile(result["values"], result["turn"], true)
+			rpc("sync_first_tile", result["values"], result["turn"], true)
+	else:
+		var result = GameState.find_highest_double()
+		if result.is_empty():
+			while not boneyard.domino_pool.is_empty():
+				var drawn = boneyard.domino_pool.pop_back()
+				if drawn[0] == drawn[1]:
+					_spawn_first_tile(drawn, GameState.Turn.PLAYER, false)
+					return
+			return
+		_spawn_first_tile(result["values"], result["turn"], true)
+	
+@rpc("authority", "call_local")
+func sync_first_tile(values: Array, holder: GameState.Turn, from_hand: bool) -> void:
+	_spawn_first_tile(values, holder, from_hand)
 	
 func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
