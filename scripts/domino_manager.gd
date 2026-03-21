@@ -277,7 +277,7 @@ func _on_slot_clicked(slot):
 		if GameState.multiplayer_mode and GameState.is_host:
 			print("host ending turn, broadcasting sync_turn")
 			GameState.end_turn()
-			rpc("sync_turn", int(GameState.current_turn))
+			rpc("sync_turn", GameState.current_turn)
 		elif not GameState.multiplayer_mode:
 			GameState.end_turn()
 			
