@@ -273,6 +273,11 @@ func _on_slot_clicked(slot):
 
 	_clear_slots()
 	GameState.reset_passes()
+	if GameState.multiplayer_mode:
+		var left = area.left_val
+		var right = area.right_val
+		rpc("sync_placement", left, right, int(placed_dir), is_head, domino_to_place.position, domino_to_place.rotation_degrees)
+	
 	if not GameState.check_win_condition():
 		if GameState.multiplayer_mode and GameState.is_host:
 			print("host ending turn, broadcasting sync_turn")
@@ -280,6 +285,41 @@ func _on_slot_clicked(slot):
 			rpc("sync_turn", GameState.current_turn)
 		elif not GameState.multiplayer_mode:
 			GameState.end_turn()
+			
+@rpc("any_peer")
+func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, pos: Vector2, rot: float):
+	if multiplayer.get_remote_sender_id() == 0:
+		return
+	var placed_dir = placed_dir_int as Direction
+	var new_open = right if left == (head_val if is_head else tail_val) else left
+	
+	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
+	board_root.add_child(new_domino)
+	new_domino.position = pos
+	new_domino.rotation_degrees = rot
+	
+	var area = new_domino.get_node("Area2D")
+	area.set_values(left, right)
+	area.collision_layer = 0
+	area.collision_mask = 0
+	
+	GameState.remove_from_hand(GameState.Turn.OPPONENT, [left, right])
+	var opp_hand = get_node("../OpponentHand")
+	opp_hand.remove_domino(left, right)
+	
+	var entry = _make_board_node(new_domino)
+	if is_head:
+		head_val = new_open
+		head_dir = placed_dir
+		entry.next = board_head
+		board_head.prev = entry
+		board_head = entry
+	else:
+		tail_val = new_open
+		tail_dir = placed_dir
+		entry.prev = board_tail
+		board_tail.next = entry
+		board_tail = entry
 			
 @rpc("authority")
 func sync_turn(turn: GameState.Turn):
