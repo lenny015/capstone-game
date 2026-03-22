@@ -118,7 +118,8 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 				GameState.end_turn()
 		else:
 			var opp_hand = get_node("../OpponentHand")
-			opp_hand.remove_domino(values[0], values[1])
+			opp_hand.remove_domino(values[0], values[1], false)
+			GameState.remove_from_hand(GameState.Turn.OPPONENT, values)
 			GameState.current_turn = GameState.Turn.PLAYER
 			if not GameState.multiplayer_mode:
 				GameState.turn_changed.emit(GameState.current_turn)	

@@ -49,14 +49,15 @@ func _add_domino_visual(left: int, right: int):
 	opponent_hand.append(new_domino)
 	_update_positions()
 
-func remove_domino(left: int, right: int):
+func remove_domino(left: int, right: int, update_data: bool = true):
 	for domino in opponent_hand:
 		var area = domino.get_node("Area2D")
 		if (area.left_val == left and area.right_val == right) or \
 		   (area.left_val == right and area.right_val == left):
 			opponent_hand.erase(domino)
 			domino.queue_free()
-			GameState.remove_from_hand(GameState.Turn.OPPONENT, [left, right])
+			if update_data:
+				GameState.remove_from_hand(GameState.Turn.OPPONENT, [left, right])
 			_update_positions()
 			return
 
