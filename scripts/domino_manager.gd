@@ -113,6 +113,13 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 			var opp_hand = get_node("../OpponentHand")
 			opp_hand.remove_domino(values[0], values[1])
 			GameState.current_turn = GameState.Turn.PLAYER
+			if not GameState.multiplayer_mode:
+				GameState.turn_changed.emit(GameState.current_turn)
+	
+	if GameState.multiplayer_mode and GameState.is_host:
+		var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
+		rpc("sync_turn", turn_for_guest)
+		GameState.turn_changed.emit(GameState.current_turn)
 	
 func _half_width(domino_node: Node2D, dir: Direction) -> float:
 	var r = int(domino_node.rotation_degrees) % 180
