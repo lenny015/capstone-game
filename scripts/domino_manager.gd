@@ -282,7 +282,10 @@ func _on_slot_clicked(slot):
 		if GameState.multiplayer_mode and GameState.is_host:
 			print("host ending turn, broadcasting sync_turn")
 			GameState.end_turn()
-			rpc("sync_turn", GameState.current_turn)
+			var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
+			rpc("sync_turn", turn_for_guest)
+		elif GameState.multiplayer_mode and not GameState.is_host:
+			rpc_id(1, "request_end_turn")
 		elif not GameState.multiplayer_mode:
 			GameState.end_turn()
 			
@@ -329,6 +332,14 @@ func sync_turn(turn: GameState.Turn):
 	GameState.turn_changed.emit(turn)
 	print("turn_changed emitted, current_turn now: %s  is_player_turn: %s" % [GameState.current_turn, GameState.is_player_turn()])
 		
+@rpc("any_peer")
+func request_end_turn() -> void:
+	if not GameState.is_host:
+		return
+	GameState.end_turn()
+	var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
+	rpc("sync_turn", turn_for_guest)	
+	
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
