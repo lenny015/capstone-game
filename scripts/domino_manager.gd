@@ -97,33 +97,32 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 	board_tail = entry
  
 	if from_hand:
-		if holder == GameState.Turn.PLAYER:
-			var held: bool
-			if GameState.multiplayer_mode:
-				held = (holder == GameState.Turn.PLAYER and GameState.is_host) or (holder == GameState.Turn.OPPONENT and not GameState.is_host)
-			else:
-				held = (holder == GameState.Turn.PLAYER)
+		var held: bool
+		if GameState.multiplayer_mode:
+			held = (holder == GameState.Turn.PLAYER and GameState.is_host) or (holder == GameState.Turn.OPPONENT and not GameState.is_host)
+		else: 
+			held = (holder == GameState.Turn.PLAYER)
 			
-			if held:
-				for domino in player_hand.player_hand:
-					var area = domino.get_node("Area2D")
-					if area.left_val == values[0] and area.right_val == values[1]:
-						domino.queue_free()
-						player_hand.player_hand.erase(domino)
-						domino_original_pos.erase(domino)
-						player_hand.update_hand_positions()
-						break
-				GameState.remove_from_hand(GameState.Turn.PLAYER, values)
-				GameState.current_turn = GameState.Turn.OPPONENT
-				if not GameState.multiplayer_mode:
-					GameState.end_turn()
-			else:
-				var opp_hand = get_node("../OpponentHand")
-				opp_hand.remove_domino(values[0], values[1])
-				GameState.current_turn = GameState.Turn.PLAYER
-				if not GameState.multiplayer_mode:
-					GameState.turn_changed.emit(GameState.current_turn)
-	
+		if held:
+			for domino in player_hand.player_hand:
+				var area = domino.get_node("Area2D")
+				if area.left_val == values[0] and area.right_val == values[1]:
+					domino.queue_free()
+					player_hand.player_hand.erase(domino)
+					domino_original_pos.erase(domino)
+					player_hand.update_hand_positions()
+					break
+			GameState.remove_from_hand(GameState.Turn.PLAYER, values)
+			GameState.current_turn = GameState.Turn.OPPONENT
+			if not GameState.multiplayer_mode:
+				GameState.end_turn()
+		else:
+			var opp_hand = get_node("../OpponentHand")
+			opp_hand.remove_domino(values[0], values[1])
+			GameState.current_turn = GameState.Turn.PLAYER
+			if not GameState.multiplayer_mode:
+				GameState.turn_changed.emit(GameState.current_turn)	
+		
 	if GameState.multiplayer_mode and GameState.is_host:
 		var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
 		rpc("sync_turn", turn_for_guest)
