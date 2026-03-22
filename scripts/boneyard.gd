@@ -111,11 +111,11 @@ func _do_draw(turn: GameState.Turn) -> void:
 	if turn == GameState.Turn.PLAYER:
 		GameState.add_to_hand(GameState.Turn.PLAYER, values)
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
-		rpc("sync_opponent_draw_count", values)
+		rpc("sync_opponent_draw", values)
 	else:
 		GameState.add_to_hand(GameState.Turn.OPPONENT, values)
 		rpc_id(multiplayer.get_remote_sender_id(), "receive_drawn_tile", values)
-		rpc("sync_opponent_draw_count", values)
+		rpc_id(1 ,"sync_opponent_draw", values)
 	if domino_pool.is_empty():
 		visible = false
 
@@ -125,5 +125,6 @@ func receive_drawn_tile(values: Array) -> void:
 	player_hand.add_domino_to_hand_from_values(values[0], values[1])
 
 @rpc("any_peer")
-func sync_opponent_draw_count(_count: int) -> void:
+func sync_opponent_draw(values: Array) -> void:
+	GameState.opponent_hand_data.append(values)
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
