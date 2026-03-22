@@ -17,9 +17,18 @@ func _ready():
 	GameState.hand_changed.connect(_on_hand_changed)
 
 func _on_hand_changed(whose_turn: GameState.Turn):
-	if whose_turn == GameState.Turn.OPPONENT and opponent_hand.is_empty():
-		for values in GameState.opponent_hand_data:
-			_add_domino_visual(values[0], values[1])
+	if whose_turn != GameState.Turn.OPPONENT:
+		return
+	var data_count = GameState.opponent_hand_data.size()
+	var visual_count = opponent_hand.size()
+	if data_count > visual_count:
+		for i in range(data_count - visual_count):
+			_add_domino_visual(0, 0)
+	elif data_count < visual_count:
+		while opponent_hand.size() > data_count:
+			var domino = opponent_hand.pop_back()
+			domino.queue_free()
+		_update_positions()
 
 func _add_domino_visual(left: int, right: int):
 	var domino_scene = preload(DOMINO_SCENE_PATH)
