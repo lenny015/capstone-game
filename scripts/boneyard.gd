@@ -103,9 +103,15 @@ func host_draw_for_player() -> void:
 
 func _do_draw(turn: GameState.Turn) -> void:
 	if domino_pool.is_empty():
+		var was_active = GameState.game_active
 		GameState.pass_turn()
 		if GameState.multiplayer_mode and GameState.is_host:
-			get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
+			if was_active and not GameState.game_active:
+				var guest_won = GameState.current_turn == GameState.Turn.OPPONENT
+				var reason = "draw" if GameState.consecutive_passes == 0 else "blocked"
+				get_node("../DominoManager").rpc("sync_game_over", int(guest_won), reason)
+			else:
+				get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
 		return
 	var values = domino_pool.pop_back()
 	if turn == GameState.Turn.PLAYER:

@@ -293,7 +293,10 @@ func _on_slot_clicked(slot):
 		var right = area.right_val
 		rpc("sync_placement", left, right, int(placed_dir), is_head, domino_to_place.position, domino_to_place.rotation_degrees)
 	
-	if not GameState.check_win_condition():
+	var won = GameState.check_win_condition()
+	if GameState.multiplayer_mode and GameState.is_host and won:
+		rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
+	if not won: 
 		if GameState.multiplayer_mode and GameState.is_host:
 			print("host ending turn, broadcasting sync_turn")
 			GameState.end_turn()
@@ -338,6 +341,11 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 		entry.prev = board_tail
 		board_tail.next = entry
 		board_tail = entry
+		
+	if GameState.multiplayer_mode and GameState.is_host:
+		var won = GameState.check_win_condition()
+		if won:
+			rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
 			
 @rpc("authority")
 func sync_turn(turn: GameState.Turn):
@@ -354,6 +362,14 @@ func request_end_turn() -> void:
 	GameState.end_turn()
 	var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
 	rpc("sync_turn", turn_for_guest)	
+	
+@rpc("authority")
+func sync_game_over(guest_won: int, reason: String) -> void:
+	# guest_won: 1 = guest wins, 0 = host wins
+	if guest_won == 1:
+		GameState.game_over.emit(GameState.Turn.PLAYER, reason)
+	else:
+		GameState.game_over.emit(GameState.Turn.OPPONENT, reason)
 	
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
