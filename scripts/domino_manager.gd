@@ -298,7 +298,6 @@ func _on_slot_clicked(slot):
 		rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
 	if not won: 
 		if GameState.multiplayer_mode and GameState.is_host:
-			print("host ending turn, broadcasting sync_turn")
 			GameState.end_turn()
 			var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
 			rpc("sync_turn", turn_for_guest)
@@ -349,11 +348,8 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 			
 @rpc("authority")
 func sync_turn(turn: GameState.Turn):
-	print("sync_turn received, turn: %s  is_host: %s" % [turn, GameState.is_host])
 	GameState.current_turn = turn
-	print("about to emit turn_changed")
 	GameState.turn_changed.emit(turn)
-	print("turn_changed emitted, current_turn now: %s  is_player_turn: %s" % [GameState.current_turn, GameState.is_player_turn()])
 		
 @rpc("any_peer")
 func request_end_turn() -> void:

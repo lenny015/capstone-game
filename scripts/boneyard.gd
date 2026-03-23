@@ -104,12 +104,26 @@ func host_draw_for_player() -> void:
 func _do_draw(turn: GameState.Turn) -> void:
 	if domino_pool.is_empty():
 		var was_active = GameState.game_active
+		# Capture pass count before pass_turn modifies it
+		var passes_before = GameState.consecutive_passes
 		GameState.pass_turn()
 		if GameState.multiplayer_mode and GameState.is_host:
 			if was_active and not GameState.game_active:
-				var guest_won = GameState.current_turn == GameState.Turn.OPPONENT
-				var reason = "draw" if GameState.consecutive_passes == 0 else "blocked"
-				get_node("../DominoManager").rpc("sync_game_over", int(guest_won), reason)
+				var reason = "draw" if passes_before >= 1 else "blocked"
+				var player_pips = 0
+				for d in GameState.player_hand_data:
+					player_pips += d[0] + d[1]
+				var opponent_pips = 0
+				for d in GameState.opponent_hand_data:
+					opponent_pips += d[0] + d[1]
+				var guest_won: int
+				if opponent_pips < player_pips:
+					guest_won = 1
+				elif player_pips < opponent_pips:
+					guest_won = 0
+				else:
+					guest_won = 1
+				get_node("../DominoManager").rpc("sync_game_over", guest_won, reason)
 			else:
 				get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
 		return
@@ -117,11 +131,11 @@ func _do_draw(turn: GameState.Turn) -> void:
 	if turn == GameState.Turn.PLAYER:
 		GameState.add_to_hand(GameState.Turn.PLAYER, values)
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
-		rpc("sync_opponent_draw", values)
+		rpc("sync_opponent_draw_count", values)
 	else:
 		GameState.add_to_hand(GameState.Turn.OPPONENT, values)
 		rpc_id(multiplayer.get_remote_sender_id(), "receive_drawn_tile", values)
-		rpc_id(1 ,"sync_opponent_draw", values)
+		rpc("sync_opponent_draw_count", values)
 	if domino_pool.is_empty():
 		visible = false
 
