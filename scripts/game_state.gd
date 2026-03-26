@@ -117,3 +117,10 @@ func pass_turn() -> void:
 	
 func reset_passes():
 	consecutive_passes = 0
+	
+func reset():
+	player_hand_data.clear()
+	opponent_hand_data.clear()
+	current_turn = Turn.PLAYER
+	game_active = false
+	consecutive_passes = 0

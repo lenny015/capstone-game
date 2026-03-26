@@ -163,6 +163,7 @@ func _return_to_menu():
 	multiplayer.multiplayer_peer = null
 	GameState.multiplayer_mode = false
 	GameState.is_host = false
+	GameState.reset()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 	
 
