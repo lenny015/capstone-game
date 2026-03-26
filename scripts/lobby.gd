@@ -27,6 +27,7 @@ func _ready():
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
+
 # Prelobby
 
 func _on_host_pressed():
@@ -43,6 +44,7 @@ func _on_join_pressed():
 
 func _on_back_pressed():
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
 
 # Entering Lobby Room
 
@@ -68,7 +70,11 @@ func _enter_lobby_room(code: String):
 	lobby_room.visible = true
 	code_display.text = "Join Code: %s" % code
 	start_button.visible = false
+	if not is_host:
+		ready_button.disabled = true
+		ready_button.text = "Connecting..."
 	_refresh_player_list()
+
 
 # Player List
 
@@ -93,6 +99,8 @@ func _on_lobby_chat_update(_lobby_id: int, _changed_id: int, _making_change_id: 
 
 func _on_peer_connected(_peer_id: int):
 	_add_chat_message("System", "Player connected")
+	ready_button.disabled = false
+	ready_button.text = "Ready"
 	_refresh_player_list()
  
 func _on_peer_disconnected(peer_id: int):
@@ -104,6 +112,7 @@ func _on_peer_disconnected(peer_id: int):
 	if not is_host and peer_id == 1:
 		await get_tree().create_timer(1.5).timeout
 		_return_to_menu()
+
 
 # Buttons
 
