@@ -34,12 +34,14 @@ func _ready_multiplayer():
 		for values in GameState.opponent_hand_data:
 			domino_pool.erase(values)
 		_spawn_player_hand()
-		rpc("receive_hand", GameState.opponent_hand_data)
-		rpc("receive_opponent_hand_count", GameState.player_hand_data)
 		GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+	else:
+		rpc_id(1, "guest_scene_ready")
 
 @rpc("authority")
 func receive_hand(hand: Array) -> void:
+	player_hand.clear_hand()
+	GameState.player_hand_data.clear()
 	GameState.player_hand_data = hand.duplicate()
 	for values in hand:
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
@@ -148,3 +150,10 @@ func receive_drawn_tile(values: Array) -> void:
 func sync_opponent_draw(values: Array) -> void:
 	GameState.opponent_hand_data.append(values)
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+	
+@rpc("any_peer")
+func guest_scene_ready() -> void:
+	if not GameState.is_host:
+		return
+	rpc("receive_hand", GameState.opponent_hand_data)
+	rpc("receive_opponent_hand_count", GameState.player_hand_data)

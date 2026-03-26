@@ -48,6 +48,13 @@ func remove_domino_from_hand(domino: Node2D):
 	domino_manager.domino_original_pos.erase(domino)
 	update_hand_positions()
 	
+func clear_hand():
+	for domino in player_hand:
+		if is_instance_valid(domino):
+			domino.queue_free()
+	player_hand.clear()
+	_update_background()
+	
 func update_hand_positions():
 	for i in range(player_hand.size()):
 		var new_pos = Vector2(calc_domino_pos(i), hand_y_pos)
