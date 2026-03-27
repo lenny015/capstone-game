@@ -366,6 +366,14 @@ func sync_game_over(guest_won: int, reason: String) -> void:
 		GameState.game_over.emit(GameState.Turn.PLAYER, reason)
 	else:
 		GameState.game_over.emit(GameState.Turn.OPPONENT, reason)
+		
+@rpc("any_peer", "call_local")
+func sync_rematch_vote() -> void:
+	get_node("../HUD").on_rematch_vote_received()
+	
+@rpc("any_peer", "call_local")
+func sync_return_to_lobby() -> void:
+	get_node("../HUD").on_return_to_lobby()
 	
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -448,3 +456,4 @@ func raycast_check(mask: int):
 	if result.size() > 0:
 		return result[0].collider.get_parent()
 	return null
+	
