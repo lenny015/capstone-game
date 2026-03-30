@@ -31,6 +31,7 @@ func _ready():
 	button_row.visible = false
 	rematch_button.pressed.connect(_on_rematch_pressed)
 	lobby_button.pressed.connect(_on_lobby_pressed)
+	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	
 func _on_turn_changed(whose_turn: GameState.Turn):
 	if whose_turn == GameState.Turn.PLAYER:
@@ -125,4 +126,26 @@ func _do_return_to_lobby():
 	if GameState.multiplayer_mode:
 		GameState.multiplayer_mode = false
 		GameState.is_host = false
+	get_tree().change_scene_to_file("res://scenes/lobby.tscn")
+	
+func _on_peer_disconnected(_peer_id: int):
+	if not GameState.multiplayer_mode:
+		return
+	var player_name = "Opponent"
+	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
+	for i in range(member_count):
+		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
+		if steam_id != Steam.getSteamID():
+			player_name = Steam.getFriendPersonaName(steam_id)
+			break
+	game_over_label.text = "%s disconnected" % player_name
+	_set_banner_color(Color(0.15, 0.15, 0.15, 0.95))
+	game_over_banner.visible = true
+	game_over_banner.modulate.a = 1.0
+	button_row.visible = false
+	await get_tree().create_timer(2.5).timeout
+	GameState.reset()
+	GameState.multiplayer_mode = false
+	GameState.is_host = false
+	multiplayer.multiplayer_peer = null
 	get_tree().change_scene_to_file("res://scenes/lobby.tscn")
