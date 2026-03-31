@@ -13,6 +13,10 @@ extends Control
 @onready var start_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton
 @onready var chat_log: RichTextLabel = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatLog
 @onready var chat_input: LineEdit = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput
+@onready var settings_panel: VBoxContainer = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel
+@onready var mode_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow/ModeButton
+@onready var points_row: HBoxContainer = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow
+@onready var points_input: SpinBox = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow/PointsInput
 
 var is_host: bool = false
 var is_ready: bool = false
@@ -70,10 +74,12 @@ func _enter_lobby_room(code: String):
 	lobby_room.visible = true
 	code_display.text = "Join Code: %s" % code
 	start_button.visible = false
+	settings_panel.visible = true
 	if not is_host:
 		ready_button.disabled = true
 		ready_button.text = "Connecting..."
-	_refresh_player_list()
+		mode_button.disabled = true
+		points_input.editable = false
 
 
 # Player List
@@ -102,6 +108,8 @@ func _on_peer_connected(_peer_id: int):
 	ready_button.disabled = false
 	ready_button.text = "Ready"
 	_refresh_player_list()
+	if is_host:
+		rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
  
 func _on_peer_disconnected(peer_id: int):
 	_add_chat_message("System", "Player disconnected")
@@ -145,6 +153,39 @@ func _check_all_ready():
 			start_button.visible = false
 			return
 	start_button.visible = true
+	
+func _on_mode_pressed():
+	if not is_host:
+		return
+	if MatchState.game_mode == MatchState.GameMode.UNLIMITED:
+		MatchState.game_mode = MatchState.GameMode.MATCH
+		mode_button.text = "Match Mode"
+		points_row.visible = true
+		MatchState.point_target = int(points_input.value)
+	else:
+		MatchState.game_mode = MatchState.GameMode.UNLIMITED
+		mode_button.text = "Unlimited"
+		points_row.visible = false
+	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
+
+func _on_points_changed(value: float):
+	if not is_host:
+		return
+	MatchState.point_target = int(value)
+	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
+
+@rpc("authority", "call_local")
+func sync_settings(mode: int, target: int) -> void:
+	MatchState.game_mode = mode as MatchState.GameMode
+	MatchState.point_target = target
+	
+	if mode == MatchState.GameMode.MATCH:
+		mode_button.text = "Match Mode"
+		points_row.visible = true
+		points_input.value = target
+	else:
+		mode_button.text = "Unlimited"
+		points_row.visible = false
 
 func _on_start_pressed():
 	if is_host:

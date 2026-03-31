@@ -135,6 +135,57 @@ theme_override_constants/separation = 8
 [node name="HSep2" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 
+[node name="SettingsPanel" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SettingsLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "GAME SETTINGS"
+
+[node name="ModeRow" type="HBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ModeLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Mode:"
+
+[node name="ModeButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow"]
+custom_minimum_size = Vector2(120, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Unlimited"
+
+[node name="PointsRow" type="HBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PointsLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Points:"
+
+[node name="PointsInput" type="SpinBox" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow"]
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+min_value = 50.0
+max_value = 1000.0
+step = 50.0
+value = 200.0
+
+[node name="HSep3" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+layout_mode = 2
+
 [node name="StartButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 visible = false
 custom_minimum_size = Vector2(0, 48)
@@ -204,6 +255,8 @@ text = "Send"
 [connection signal="pressed" from="PreLobby/HostButton" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="PreLobby/JoinButton" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="PreLobby/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow/ModeButton" to="." method="_on_mode_pressed"]
+[connection signal="value_changed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow/PointsInput" to="." method="_on_points_changed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton" to="." method="_on_ready_pressed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/LeaveLobbyButton" to="." method="_on_leave_pressed"]
