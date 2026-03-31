@@ -89,10 +89,20 @@ func has_valid_move(turn: Turn, head_val: int, tail_val: int) -> bool:
 func check_win_condition() -> bool:
 	if player_hand_data.is_empty():
 		game_active = false
+		if MatchState.is_match_mode():
+			var points = 0
+			for d in opponent_hand_data:
+				points += d[0] + d[1]
+			MatchState.add_score(Turn.PLAYER, points)
 		game_over.emit(Turn.PLAYER, "empty_hand")
 		return true
 	if opponent_hand_data.is_empty():
 		game_active = false
+		if MatchState.is_match_mode():
+			var points = 0
+			for d in player_hand_data:
+				points += d[0] + d[1]
+			MatchState.add_score(Turn.OPPONENT, points)
 		game_over.emit(Turn.OPPONENT, "empty_hand")
 		return true
 	return false
@@ -106,11 +116,18 @@ func pass_turn() -> void:
 		var opponent_pips = 0
 		for d in opponent_hand_data:
 			opponent_pips += d[0] + d[1]
+		game_active = false
 		if player_pips < opponent_pips:
+			if MatchState.is_match_mode():
+				MatchState.add_score(Turn.PLAYER, player_pips + opponent_pips)
 			game_over.emit(Turn.PLAYER, "blocked")
 		elif opponent_pips < player_pips:
+			if MatchState.is_match_mode():
+				MatchState.add_score(Turn.OPPONENT, player_pips + opponent_pips)
 			game_over.emit(Turn.OPPONENT, "blocked")
 		else:
+			if MatchState.is_match_mode():
+				MatchState.add_score(Turn.PLAYER, 0)
 			game_over.emit(Turn.PLAYER, "draw")
 		return
 	end_turn()
