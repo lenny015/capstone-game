@@ -101,6 +101,44 @@ shape = SubResource("RectangleShape2D_0jtfi")
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("5_qmxhh")
 
+[node name="ScoreDisplay" type="PanelContainer" parent="HUD"]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -80.0
+offset_right = 80.0
+offset_bottom = 80.0
+grow_vertical = 2
+
+[node name="ScoreVBox" type="VBoxContainer" parent="HUD/ScoreDisplay"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="OpponentScoreLabel" type="Label" parent="HUD/ScoreDisplay/ScoreVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Opp
+0"
+horizontal_alignment = 1
+
+[node name="Divider" type="Label" parent="HUD/ScoreDisplay/ScoreVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "—"
+horizontal_alignment = 1
+
+[node name="PlayerScoreLabel" type="Label" parent="HUD/ScoreDisplay/ScoreVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "You
+0"
+horizontal_alignment = 1
+
 [node name="GameOverBanner" type="Panel" parent="HUD"]
 visible = false
 anchors_preset = 15
