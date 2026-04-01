@@ -49,6 +49,7 @@ func receive_hand(hand: Array) -> void:
 
 @rpc("authority")
 func receive_opponent_hand_count(host_hand: Array) -> void:
+	get_node("../OpponentHand").clear_hand()
 	GameState.opponent_hand_data = host_hand.duplicate()
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
 
@@ -125,7 +126,8 @@ func _do_draw(turn: GameState.Turn) -> void:
 					guest_won = 0
 				else:
 					guest_won = 1
-				get_node("../DominoManager").rpc("sync_game_over", guest_won, reason)
+				if MatchState.is_match_mode():
+					get_node("../DominoManager").rpc("sync_game_over_with_scores", guest_won, reason, MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points)
 			else:
 				get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
 		return

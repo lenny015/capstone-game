@@ -55,7 +55,12 @@ func _on_score_changed(player_score: int, opponent_score: int) -> void:
 func _on_game_over(winner: GameState.Turn, reason: String):
 	_fade_border(player_bg, BORDER_COLOR_OFF)
 	_fade_border(opponent_bg, BORDER_COLOR_OFF)
+	if MatchState.is_match_mode():
+		_on_round_over(winner, reason)
+	else:
+		_on_unlimited_game_over(winner, reason)
 
+func _on_unlimited_game_over(winner: GameState.Turn, reason: String):
 	if winner == GameState.Turn.PLAYER:
 		game_over_label.text = "You Win!" if reason == "empty_hand" else "You Win! (Fewer Pips)"
 	else:
@@ -67,6 +72,42 @@ func _on_game_over(winner: GameState.Turn, reason: String):
 	tween.tween_property(game_over_banner, "modulate:a", 1.0, FADE_DURATION)
 	tween.tween_callback(_fade_out_board)
 	tween.tween_callback(_show_postgame_buttons)
+	
+func _on_round_over(winner: GameState.Turn, reason: String):
+	var points = MatchState.last_round_points
+	var won = winner == GameState.Turn.PLAYER
+	var result_text = ""
+	if won:
+		result_text = "Round Won!\n+%d points" % points
+	else:
+		result_text = "Round Lost"
+	if reason == "draw":
+		result_text = "Draw — No points"
+	if MatchState.capicu_pending and won:
+		result_text = "Capicú! \n+%d points (+100 bonus)" % points
+	game_over_label.text = result_text
+	_set_banner_color(BANNER_COLOR)
+	game_over_banner.visible = true
+	var tween = get_tree().create_tween()
+	tween.tween_property(game_over_banner, "modulate:a", 1.0, FADE_DURATION)
+	tween.tween_callback(_fade_out_board)
+	tween.tween_interval(2.5)
+	tween.tween_callback(_check_match_result)
+	
+func _check_match_result():
+	var match_winner = MatchState.check_match_winner()
+	if match_winner == MatchState.MatchWinner.NONE:
+		MatchState.reset_round()
+		get_tree().change_scene_to_file("res://scenes/game_board.tscn")
+	else:
+		var won = match_winner == MatchState.MatchWinner.PLAYER
+		game_over_label.text = "You Win the Match!\n%d — %d" % [MatchState.player_score, MatchState.opponent_score] if won else "Opponent Wins the Match!\n%d — %d" % [MatchState.player_score, MatchState.opponent_score]
+		game_over_banner.modulate.a = 0.0
+		game_over_banner.visible = true
+		var tween = get_tree().create_tween()
+		tween.tween_property(game_over_banner, "modulate:a", 1.0, FADE_DURATION)
+		tween.tween_callback(_show_postgame_buttons)
+	
 
 func _set_banner_color(color: Color):
 	var stylebox = game_over_banner.get_theme_stylebox("panel") as StyleBoxFlat

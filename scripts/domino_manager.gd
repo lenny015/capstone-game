@@ -295,7 +295,10 @@ func _on_slot_clicked(slot):
 	
 	var won = GameState.check_win_condition()
 	if GameState.multiplayer_mode and GameState.is_host and won:
-		rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
+		if MatchState.is_match_mode():
+			rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points)
+		else:
+			rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
 	if not won: 
 		if GameState.multiplayer_mode and GameState.is_host:
 			GameState.end_turn()
@@ -344,8 +347,22 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 	if GameState.multiplayer_mode and GameState.is_host:
 		var won = GameState.check_win_condition()
 		if won:
-			rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
-			
+			if MatchState.is_match_mode():
+				rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points)
+			else:
+				rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
+
+@rpc("authority")
+func sync_game_over_with_scores(guest_won: int, reason: String, player_score: int, opponent_score: int, last_round_points: int) -> void:
+	MatchState.opponent_score = player_score
+	MatchState.player_score = opponent_score
+	MatchState.last_round_points = last_round_points
+	MatchState.score_changed.emit(MatchState.player_score, MatchState.opponent_score)
+	if guest_won == 1:
+		GameState.game_over.emit(GameState.Turn.PLAYER, reason)
+	else:
+		GameState.game_over.emit(GameState.Turn.OPPONENT, reason)
+
 @rpc("authority")
 func sync_turn(turn: GameState.Turn):
 	GameState.current_turn = turn
@@ -366,6 +383,13 @@ func sync_game_over(guest_won: int, reason: String) -> void:
 		GameState.game_over.emit(GameState.Turn.PLAYER, reason)
 	else:
 		GameState.game_over.emit(GameState.Turn.OPPONENT, reason)
+
+@rpc("authority")
+func sync_match_scores(player_score: int, opponent_score: int, last_round_points: int) -> void:
+	MatchState.opponent_score = player_score
+	MatchState.player_score = opponent_score
+	MatchState.last_round_points = last_round_points
+	MatchState.score_changed.emit(MatchState.player_score, MatchState.opponent_score)
 		
 @rpc("any_peer", "call_local")
 func sync_rematch_vote() -> void:
@@ -456,4 +480,3 @@ func raycast_check(mask: int):
 	if result.size() > 0:
 		return result[0].collider.get_parent()
 	return null
-	

@@ -68,6 +68,13 @@ func _update_positions():
 		var tween = get_tree().create_tween()
 		tween.tween_property(opponent_hand[i], "position", Vector2(x, hand_y_pos), 0.2)
 	_update_background()
+	
+func clear_hand() -> void:
+	for domino in opponent_hand:
+		if is_instance_valid(domino):
+			domino.queue_free()
+	opponent_hand.clear()
+	_update_background()
 		
 func _update_background():
 	if opponent_hand.is_empty():
