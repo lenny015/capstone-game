@@ -107,7 +107,6 @@ func host_draw_for_player() -> void:
 func _do_draw(turn: GameState.Turn) -> void:
 	if domino_pool.is_empty():
 		var was_active = GameState.game_active
-		# Capture pass count before pass_turn modifies it
 		var passes_before = GameState.consecutive_passes
 		GameState.pass_turn()
 		if GameState.multiplayer_mode and GameState.is_host:
@@ -127,7 +126,7 @@ func _do_draw(turn: GameState.Turn) -> void:
 				else:
 					guest_won = 1
 				if MatchState.is_match_mode():
-					get_node("../DominoManager").rpc("sync_game_over_with_scores", guest_won, reason, MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points)
+					get_node("../DominoManager").rpc("sync_game_over_with_scores", guest_won, reason, MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points, false)
 			else:
 				get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
 		return

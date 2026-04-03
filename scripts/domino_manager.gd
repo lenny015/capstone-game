@@ -357,10 +357,11 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 				rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
 
 @rpc("authority")
-func sync_game_over_with_scores(guest_won: int, reason: String, player_score: int, opponent_score: int, last_round_points: int) -> void:
+func sync_game_over_with_scores(guest_won: int, reason: String, player_score: int, opponent_score: int, last_round_points: int, capicu: bool) -> void:
 	MatchState.opponent_score = player_score
 	MatchState.player_score = opponent_score
 	MatchState.last_round_points = last_round_points
+	MatchState.capicu_pending = capicu
 	MatchState.score_changed.emit(MatchState.player_score, MatchState.opponent_score)
 	if guest_won == 1:
 		GameState.game_over.emit(GameState.Turn.PLAYER, reason)
