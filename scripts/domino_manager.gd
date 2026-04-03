@@ -292,6 +292,10 @@ func _on_slot_clicked(slot):
 		var left = area.left_val
 		var right = area.right_val
 		rpc("sync_placement", left, right, int(placed_dir), is_head, domino_to_place.position, domino_to_place.rotation_degrees)
+		
+	if MatchState.is_match_mode() and GameState.player_hand_data.size() == 0:
+		if head_val == tail_val and head_val == new_open:
+			MatchState.capicu_pending = true
 	
 	var won = GameState.check_win_condition()
 	if GameState.multiplayer_mode and GameState.is_host and won:
