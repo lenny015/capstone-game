@@ -349,6 +349,9 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 		board_tail = entry
 		
 	if GameState.multiplayer_mode and GameState.is_host:
+		if MatchState.is_match_mode() and GameState.opponent_hand_data.is_empty():
+			if head_val == tail_val and head_val == new_open:
+				MatchState.capicu_pending = true
 		var won = GameState.check_win_condition()
 		if won:
 			if MatchState.is_match_mode():
@@ -388,13 +391,6 @@ func sync_game_over(guest_won: int, reason: String) -> void:
 		GameState.game_over.emit(GameState.Turn.PLAYER, reason)
 	else:
 		GameState.game_over.emit(GameState.Turn.OPPONENT, reason)
-
-@rpc("authority")
-func sync_match_scores(player_score: int, opponent_score: int, last_round_points: int) -> void:
-	MatchState.opponent_score = player_score
-	MatchState.player_score = opponent_score
-	MatchState.last_round_points = last_round_points
-	MatchState.score_changed.emit(MatchState.player_score, MatchState.opponent_score)
 		
 @rpc("any_peer", "call_local")
 func sync_rematch_vote() -> void:
