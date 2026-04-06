@@ -158,3 +158,4 @@ func guest_scene_ready() -> void:
 		return
 	rpc("receive_hand", GameState.opponent_hand_data)
 	rpc("receive_opponent_hand_count", GameState.player_hand_data)
+	get_node("../DominoManager").on_guest_ready()

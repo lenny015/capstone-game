@@ -50,6 +50,9 @@ func _setup_boundary():
 	var bottom_right = board_root.to_local(world_rect.position + world_rect.size)
 	boundary = Rect2(top_left, bottom_right - top_left)
 
+func on_guest_ready():
+	_place_first_domino()
+
 func _place_first_domino():
 	await get_tree().create_timer(1.0).timeout
 	if GameState.multiplayer_mode:
