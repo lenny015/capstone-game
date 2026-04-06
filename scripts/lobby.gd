@@ -205,6 +205,7 @@ func _return_to_menu():
 	GameState.multiplayer_mode = false
 	GameState.is_host = false
 	GameState.reset()
+	MatchState.reset_match()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 	
 

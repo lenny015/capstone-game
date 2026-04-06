@@ -20,4 +20,6 @@ func _on_exit_to_menu_pressed():
 		multiplayer.multiplayer_peer = null
 		GameState.multiplayer_mode = false
 		GameState.is_host = false
+	GameState.reset()
+	MatchState.reset_match()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
