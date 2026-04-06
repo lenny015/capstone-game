@@ -70,7 +70,10 @@ func calc_domino_pos(index):
 func animate_card_to_position(domino, new_pos):
 	var tween = get_tree().create_tween()
 	tween.tween_property(domino, "position", new_pos, 0.2)
-	tween.tween_callback(func(): domino_manager.store_original_position(domino))
+	tween.tween_callback(func():
+		if is_instance_valid(domino):
+			domino_manager.store_original_position(domino)
+	)
 	
 func _update_background():
 	if player_hand.is_empty():

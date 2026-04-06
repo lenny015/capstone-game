@@ -32,7 +32,8 @@ var head_dir: Direction = Direction.LEFT
 var tail_dir: Direction = Direction.RIGHT
 
 func _ready():
-	call_deferred("_place_first_domino")
+	if not GameState.multiplayer_mode:
+		call_deferred("_place_first_domino")
 	call_deferred("_setup_boundary")
 	
 func _make_board_node(domino_node):
@@ -54,6 +55,10 @@ func on_guest_ready():
 	_place_first_domino()
 
 func _place_first_domino():
+	if GameState.multiplayer_mode and not GameState.is_host:
+		return
+	if not GameState.multiplayer_mode:
+		await get_tree().create_timer(1.0).timeout
 	await get_tree().create_timer(1.0).timeout
 	if GameState.multiplayer_mode:
 		if GameState.is_host:
@@ -303,7 +308,7 @@ func _on_slot_clicked(slot):
 	var won = GameState.check_win_condition()
 	if GameState.multiplayer_mode and GameState.is_host and won:
 		if MatchState.is_match_mode():
-			rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points)
+			rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points, MatchState.capicu_pending)
 		else:
 			rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
 	if not won: 
@@ -358,7 +363,7 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 		var won = GameState.check_win_condition()
 		if won:
 			if MatchState.is_match_mode():
-				rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points)
+				rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points, MatchState.capicu_pending)
 			else:
 				rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
 
