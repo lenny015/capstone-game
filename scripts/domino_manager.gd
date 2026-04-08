@@ -30,6 +30,8 @@ var tail_val: int = -1
 
 var head_dir: Direction = Direction.LEFT
 var tail_dir: Direction = Direction.RIGHT
+var head_dir_prev: Direction = Direction.LEFT
+var tail_dir_prev: Direction = Direction.RIGHT
 
 func _ready():
 	if not GameState.multiplayer_mode:
@@ -50,6 +52,7 @@ func _setup_boundary():
 	var top_left = board_root.to_local(world_rect.position)
 	var bottom_right = board_root.to_local(world_rect.position + world_rect.size)
 	boundary = Rect2(top_left, bottom_right - top_left)
+	print("[BOUNDARY] boundary: %s" % boundary)
 
 func on_guest_ready():
 	_place_first_domino()
@@ -99,6 +102,10 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
  
 	head_val = domino_area.left_val
 	tail_val = domino_area.right_val
+	print("[FIRST] Tile [%d|%d] placed at %s | head_val: %d | tail_val: %d" % [
+		domino_area.left_val, domino_area.right_val, new_domino.position,
+		head_val, tail_val
+	])
  
 	var entry = _make_board_node(new_domino)
 	board_head = entry
@@ -175,10 +182,32 @@ func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float, 
 	var new_end_half = _half_width(base_node, new_dir)
 	var gap = new_end_half + incoming_half + SLOT_GAP
 	var candidate_pos = base_node.position + _dir_vec(new_dir) * gap + _dir_vec(current_dir) * old_dir_nudge
+	print("[TURN] Turning from %s to %s | base_pos: %s | candidate_pos: %s | out_of_bounds: %s" % [
+		Direction.keys()[current_dir], Direction.keys()[new_dir],
+		base_node.position, candidate_pos, _out_of_bounds(candidate_pos)
+	])
 	if not _out_of_bounds(candidate_pos):
 		return new_dir
 	return current_dir
-	
+
+func _update_end_directions() -> void:
+	if board_head != null:
+		var head_node = board_head["node"]
+		if _out_of_bounds(head_node.position):
+			print("[DIR] Pre-turning head from %s to %s" % [Direction.keys()[head_dir], Direction.keys()[_turn_cw(head_dir)]])
+			head_dir_prev = head_dir
+			head_dir = _turn_cw(head_dir)
+		else:
+			head_dir_prev = head_dir
+	if board_tail != null:
+		var tail_node = board_tail["node"]
+		if _out_of_bounds(tail_node.position):
+			print("[DIR] Pre-turning tail from %s to %s" % [Direction.keys()[tail_dir], Direction.keys()[_turn_cw(tail_dir)]])
+			tail_dir_prev = tail_dir
+			tail_dir = _turn_cw(tail_dir)
+		else:
+			tail_dir_prev = tail_dir
+
 func _spawn_slots():
 	_clear_slots()
 	if board_head == null:
@@ -196,7 +225,14 @@ func _spawn_slots():
 		var dir = head_dir
 		var end_half = _half_width(board_head["node"], dir)
 		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
-		if _out_of_bounds(pos):
+		if head_dir != head_dir_prev:
+			var head_area = board_head["node"].get_node("Area2D")
+			end_half = _half_width(board_head["node"], dir)
+			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+			if not head_area.is_double():
+				pos += _dir_vec(head_dir_prev) * (TILE_H / 4.0)
+		elif _out_of_bounds(pos):
+			print("[HEAD] Out of bounds at pos: %s | current dir: %s" % [pos, Direction.keys()[dir]])
 			var head_area = board_head["node"].get_node("Area2D")
 			var nudge = TILE_H / 4.0 if not head_area.is_double() else 0.0
 			var turned_dir = _try_turn(board_head["node"], dir, slot_half, nudge)
@@ -213,7 +249,14 @@ func _spawn_slots():
 		var dir = tail_dir
 		var end_half = _half_width(board_tail["node"], dir)
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
-		if _out_of_bounds(pos):
+		if tail_dir != tail_dir_prev:
+			var tail_area = board_tail["node"].get_node("Area2D")
+			end_half = _half_width(board_tail["node"], dir)
+			pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+			if not tail_area.is_double():
+				pos += _dir_vec(tail_dir_prev) * (TILE_H / 4.0)
+		elif _out_of_bounds(pos):
+			print("[TAIL] Out of bounds at pos: %s | current dir: %s" % [pos, Direction.keys()[dir]])
 			var tail_area = board_tail["node"].get_node("Area2D")
 			var nudge = TILE_H / 4.0 if not tail_area.is_double() else 0.0
 			var turned_dir = _try_turn(board_tail["node"], dir, slot_half, nudge)
@@ -294,6 +337,13 @@ func _on_slot_clicked(slot):
 		board_tail.next = entry
 		board_tail = entry
 
+	print("[PLACE] Tile [%d|%d] placed at %s | dir: %s | is_head: %s | head_val: %d | tail_val: %d | head_dir: %s | tail_dir: %s" % [
+		area.left_val, area.right_val, domino_to_place.position,
+		Direction.keys()[placed_dir], is_head,
+		head_val, tail_val,
+		Direction.keys()[head_dir], Direction.keys()[tail_dir]
+	])
+
 	_clear_slots()
 	GameState.reset_passes()
 	if GameState.multiplayer_mode:
@@ -355,7 +405,15 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 		entry.prev = board_tail
 		board_tail.next = entry
 		board_tail = entry
-		
+
+	print("[SYNC_PLACE] Tile [%d|%d] placed at %s | dir: %s | is_head: %s | head_val: %d | tail_val: %d | head_dir: %s | tail_dir: %s" % [
+		left, right, pos,
+		Direction.keys()[placed_dir], is_head,
+		head_val, tail_val,
+		Direction.keys()[head_dir], Direction.keys()[tail_dir]
+	])
+	_update_end_directions()
+
 	if GameState.multiplayer_mode and GameState.is_host:
 		if MatchState.is_match_mode() and GameState.opponent_hand_data.is_empty():
 			if head_val == tail_val and head_val == new_open:
