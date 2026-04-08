@@ -57,6 +57,8 @@ func _on_lobby_created(lobby_id: int):
 	var code = SteamManager.lobby_id_to_code(lobby_id)
 	SteamManager.start_as_host()
 	_enter_lobby_room(code)
+	await get_tree().process_frame
+	_refresh_player_list()
 
 func _on_lobby_joined(lobby_id: int):
 	if is_host:
