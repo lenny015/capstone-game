@@ -14,6 +14,7 @@ const DOMINO_SLOT_SCENE_PATH = "res://scenes/domino_slot.tscn"
 const TILE_W = 66
 const TILE_H = 132
 const SLOT_GAP = 8
+const TURN_BOUNDARY_EXPAND = 66
 
 var hovered_domino: Node2D = null
 var selected_domino: Node2D = null
@@ -35,6 +36,8 @@ var tail_dir_prev: Direction = Direction.RIGHT
 
 var head_watch_axis: String = ""
 var tail_watch_axis: String = ""
+var head_boundary_expanded: bool = false
+var tail_boundary_expanded: bool = false
 
 func _ready():
 	if not GameState.multiplayer_mode:
@@ -211,22 +214,28 @@ func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float, 
 func _update_end_directions() -> void:
 	if board_head != null:
 		var head_node = board_head["node"]
-		head_dir_prev = head_dir
 		if _near_boundary(head_node.position, head_dir):
 			print("[DIR] Pre-turning head from %s to %s" % [Direction.keys()[head_dir], Direction.keys()[_turn_cw(head_dir)]])
+			head_dir_prev = head_dir
 			head_dir = _turn_cw(head_dir)
+			head_boundary_expanded = true
 			match head_dir:
 				Direction.UP, Direction.DOWN: head_watch_axis = "y"
 				Direction.LEFT, Direction.RIGHT: head_watch_axis = "x"
+		else:
+			head_dir_prev = head_dir
 	if board_tail != null:
 		var tail_node = board_tail["node"]
-		tail_dir_prev = tail_dir
 		if _near_boundary(tail_node.position, tail_dir):
 			print("[DIR] Pre-turning tail from %s to %s" % [Direction.keys()[tail_dir], Direction.keys()[_turn_cw(tail_dir)]])
+			tail_dir_prev = tail_dir
 			tail_dir = _turn_cw(tail_dir)
+			tail_boundary_expanded = true
 			match tail_dir:
 				Direction.UP, Direction.DOWN: tail_watch_axis = "y"
 				Direction.LEFT, Direction.RIGHT: tail_watch_axis = "x"
+		else:
+			tail_dir_prev = tail_dir
 
 func _spawn_slots():
 	_clear_slots()
@@ -250,7 +259,19 @@ func _spawn_slots():
 			end_half = _half_width(board_head["node"], dir)
 			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
 			if not head_area.is_double():
-				pos += _dir_vec(head_dir_prev) * (TILE_H / 4.0)
+				if head_boundary_expanded:
+					var saved = boundary
+					boundary = boundary.grow_individual(
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.LEFT else 0,
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.UP else 0,
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.RIGHT else 0,
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.DOWN else 0
+					)
+					pos += _dir_vec(head_dir_prev) * (TILE_H / 4.0)
+					boundary = saved
+					head_boundary_expanded = false
+				else:
+					pos += _dir_vec(head_dir_prev) * (TILE_H / 4.0)
 		elif _out_of_bounds(pos, head_watch_axis):
 			print("[HEAD] Out of bounds at pos: %s | current dir: %s" % [pos, Direction.keys()[dir]])
 			var head_area = board_head["node"].get_node("Area2D")
@@ -275,7 +296,19 @@ func _spawn_slots():
 			end_half = _half_width(board_tail["node"], dir)
 			pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
 			if not tail_area.is_double():
-				pos += _dir_vec(tail_dir_prev) * (TILE_H / 4.0)
+				if tail_boundary_expanded:
+					var saved = boundary
+					boundary = boundary.grow_individual(
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.LEFT else 0,
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.UP else 0,
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.RIGHT else 0,
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.DOWN else 0
+					)
+					pos += _dir_vec(tail_dir_prev) * (TILE_H / 4.0)
+					boundary = saved
+					tail_boundary_expanded = false
+				else:
+					pos += _dir_vec(tail_dir_prev) * (TILE_H / 4.0)
 		elif _out_of_bounds(pos, tail_watch_axis):
 			print("[TAIL] Out of bounds at pos: %s | current dir: %s" % [pos, Direction.keys()[dir]])
 			var tail_area = board_tail["node"].get_node("Area2D")
