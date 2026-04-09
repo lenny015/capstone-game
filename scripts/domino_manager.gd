@@ -223,7 +223,8 @@ func _update_end_directions() -> void:
 				Direction.UP, Direction.DOWN: head_watch_axis = "y"
 				Direction.LEFT, Direction.RIGHT: head_watch_axis = "x"
 		else:
-			head_dir_prev = head_dir
+			if not head_boundary_expanded:
+				head_dir_prev = head_dir
 	if board_tail != null:
 		var tail_node = board_tail["node"]
 		if _near_boundary(tail_node.position, tail_dir):
@@ -235,7 +236,8 @@ func _update_end_directions() -> void:
 				Direction.UP, Direction.DOWN: tail_watch_axis = "y"
 				Direction.LEFT, Direction.RIGHT: tail_watch_axis = "x"
 		else:
-			tail_dir_prev = tail_dir
+			if not tail_boundary_expanded:
+				tail_dir_prev = tail_dir
 
 func _spawn_slots():
 	_clear_slots()
@@ -398,6 +400,12 @@ func _on_slot_clicked(slot):
 		head_val, tail_val,
 		Direction.keys()[head_dir], Direction.keys()[tail_dir]
 	])
+	if is_head:
+		head_boundary_expanded = false
+		head_dir_prev = head_dir
+	else:
+		tail_boundary_expanded = false
+		tail_dir_prev = tail_dir
 	_update_end_directions()
 
 	_clear_slots()
