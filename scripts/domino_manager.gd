@@ -14,6 +14,7 @@ const DOMINO_SLOT_SCENE_PATH = "res://scenes/domino_slot.tscn"
 const TILE_W = 66
 const TILE_H = 132
 const SLOT_GAP = 8
+const TURN_BOUNDARY_EXPAND = 66
 
 var hovered_domino: Node2D = null
 var selected_domino: Node2D = null
@@ -30,6 +31,13 @@ var tail_val: int = -1
 
 var head_dir: Direction = Direction.LEFT
 var tail_dir: Direction = Direction.RIGHT
+var head_dir_prev: Direction = Direction.LEFT
+var tail_dir_prev: Direction = Direction.RIGHT
+
+var head_watch_axis: String = ""
+var tail_watch_axis: String = ""
+var head_boundary_expanded: bool = false
+var tail_boundary_expanded: bool = false
 
 func _ready():
 	if not GameState.multiplayer_mode:
@@ -165,11 +173,26 @@ func _turn_cw(dir: Direction) -> Direction:
 		Direction.UP:    return Direction.RIGHT
 	return dir
 	
-func _out_of_bounds(pos: Vector2) -> bool:
+func _out_of_bounds(pos: Vector2, watch_axis: String = "") -> bool:
 	var margin = TILE_H / 2.0 + SLOT_GAP
-	var set_margin = boundary.grow(-margin)
-	return not set_margin.has_point(pos)
-	
+	var safe = boundary.grow(-margin)
+	if watch_axis == "x":
+		return pos.x < safe.position.x or pos.x > safe.end.x
+	elif watch_axis == "y":
+		return pos.y < safe.position.y or pos.y > safe.end.y
+	return not safe.has_point(pos)
+
+func _near_boundary(pos: Vector2, dir: Direction) -> bool:
+	var margin = TILE_H / 2.0 + SLOT_GAP
+	var safe = boundary.grow(-margin)
+	var lookahead = TILE_H + SLOT_GAP
+	match dir:
+		Direction.LEFT:  return pos.x - lookahead < safe.position.x
+		Direction.RIGHT: return pos.x + lookahead > safe.end.x
+		Direction.UP:    return pos.y - lookahead < safe.position.y
+		Direction.DOWN:  return pos.y + lookahead > safe.end.y
+	return false
+
 func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float, old_dir_nudge: float = 0.0) -> Direction:
 	var new_dir = _turn_cw(current_dir)
 	var new_end_half = _half_width(base_node, new_dir)
@@ -178,7 +201,33 @@ func _try_turn(base_node: Node2D, current_dir: Direction, incoming_half: float, 
 	if not _out_of_bounds(candidate_pos):
 		return new_dir
 	return current_dir
-	
+
+func _update_end_directions() -> void:
+	if board_head != null:
+		var head_node = board_head["node"]
+		if _near_boundary(head_node.position, head_dir):
+			head_dir_prev = head_dir
+			head_dir = _turn_cw(head_dir)
+			head_boundary_expanded = true
+			match head_dir:
+				Direction.UP, Direction.DOWN: head_watch_axis = "y"
+				Direction.LEFT, Direction.RIGHT: head_watch_axis = "x"
+		else:
+			if not head_boundary_expanded:
+				head_dir_prev = head_dir
+	if board_tail != null:
+		var tail_node = board_tail["node"]
+		if _near_boundary(tail_node.position, tail_dir):
+			tail_dir_prev = tail_dir
+			tail_dir = _turn_cw(tail_dir)
+			tail_boundary_expanded = true
+			match tail_dir:
+				Direction.UP, Direction.DOWN: tail_watch_axis = "y"
+				Direction.LEFT, Direction.RIGHT: tail_watch_axis = "x"
+		else:
+			if not tail_boundary_expanded:
+				tail_dir_prev = tail_dir
+
 func _spawn_slots():
 	_clear_slots()
 	if board_head == null:
@@ -196,11 +245,30 @@ func _spawn_slots():
 		var dir = head_dir
 		var end_half = _half_width(board_head["node"], dir)
 		var pos = board_head["node"].position + _dir_vec(head_dir) * (end_half + slot_half + SLOT_GAP)
-		if _out_of_bounds(pos):
+		if head_dir != head_dir_prev:
+			var head_area = board_head["node"].get_node("Area2D")
+			end_half = _half_width(board_head["node"], dir)
+			pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+			if not head_area.is_double():
+				if head_boundary_expanded:
+					var saved = boundary
+					boundary = boundary.grow_individual(
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.LEFT else 0,
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.UP else 0,
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.RIGHT else 0,
+						TURN_BOUNDARY_EXPAND if head_dir_prev == Direction.DOWN else 0
+					)
+					pos += _dir_vec(head_dir_prev) * (TILE_H / 4.0)
+					boundary = saved
+					head_boundary_expanded = false
+				else:
+					pos += _dir_vec(head_dir_prev) * (TILE_H / 4.0)
+		elif _out_of_bounds(pos, head_watch_axis):
 			var head_area = board_head["node"].get_node("Area2D")
 			var nudge = TILE_H / 4.0 if not head_area.is_double() else 0.0
 			var turned_dir = _try_turn(board_head["node"], dir, slot_half, nudge)
 			if turned_dir != dir:
+				head_watch_axis = ""
 				dir = turned_dir
 				end_half = _half_width(board_head["node"], dir)
 				pos = board_head["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
@@ -213,11 +281,30 @@ func _spawn_slots():
 		var dir = tail_dir
 		var end_half = _half_width(board_tail["node"], dir)
 		var pos = board_tail["node"].position + _dir_vec(tail_dir) * (end_half + slot_half + SLOT_GAP)
-		if _out_of_bounds(pos):
+		if tail_dir != tail_dir_prev:
+			var tail_area = board_tail["node"].get_node("Area2D")
+			end_half = _half_width(board_tail["node"], dir)
+			pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
+			if not tail_area.is_double():
+				if tail_boundary_expanded:
+					var saved = boundary
+					boundary = boundary.grow_individual(
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.LEFT else 0,
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.UP else 0,
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.RIGHT else 0,
+						TURN_BOUNDARY_EXPAND if tail_dir_prev == Direction.DOWN else 0
+					)
+					pos += _dir_vec(tail_dir_prev) * (TILE_H / 4.0)
+					boundary = saved
+					tail_boundary_expanded = false
+				else:
+					pos += _dir_vec(tail_dir_prev) * (TILE_H / 4.0)
+		elif _out_of_bounds(pos, tail_watch_axis):
 			var tail_area = board_tail["node"].get_node("Area2D")
 			var nudge = TILE_H / 4.0 if not tail_area.is_double() else 0.0
 			var turned_dir = _try_turn(board_tail["node"], dir, slot_half, nudge)
 			if turned_dir != dir:
+				tail_watch_axis = ""
 				dir = turned_dir
 				end_half = _half_width(board_tail["node"], dir)
 				pos = board_tail["node"].position + _dir_vec(dir) * (end_half + slot_half + SLOT_GAP)
@@ -294,6 +381,14 @@ func _on_slot_clicked(slot):
 		board_tail.next = entry
 		board_tail = entry
 
+	if is_head:
+		head_boundary_expanded = false
+		head_dir_prev = head_dir
+	else:
+		tail_boundary_expanded = false
+		tail_dir_prev = tail_dir
+	_update_end_directions()
+
 	_clear_slots()
 	GameState.reset_passes()
 	if GameState.multiplayer_mode:
@@ -355,7 +450,15 @@ func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, p
 		entry.prev = board_tail
 		board_tail.next = entry
 		board_tail = entry
-		
+
+	if is_head:
+		head_boundary_expanded = false
+		head_dir_prev = head_dir
+	else:
+		tail_boundary_expanded = false
+		tail_dir_prev = tail_dir
+	_update_end_directions()
+
 	if GameState.multiplayer_mode and GameState.is_host:
 		if MatchState.is_match_mode() and GameState.opponent_hand_data.is_empty():
 			if head_val == tail_val and head_val == new_open:
