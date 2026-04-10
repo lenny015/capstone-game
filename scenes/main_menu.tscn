@@ -55,6 +55,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Multiplayer"
 
+[node name="SettingsButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Settings"
+
 [node name="ExitButton" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
@@ -63,4 +69,5 @@ text = "Exit Game"
 
 [connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="VBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_pressed"]
+[connection signal="pressed" from="VBoxContainer/SettingsButton" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="VBoxContainer/ExitButton" to="." method="_on_exit_pressed"]
