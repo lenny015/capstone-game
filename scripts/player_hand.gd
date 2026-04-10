@@ -13,8 +13,8 @@ var hand_y_pos
 @onready var hand_bg = $PlayerHandBackground
 
 func _ready():
-	center_screen_x = get_viewport().size.x / 2
-	hand_y_pos = get_viewport().size.y * 0.92
+	center_screen_x = get_viewport().get_visible_rect().size.x / 2
+	hand_y_pos = get_viewport().get_visible_rect().size.y * 0.92
 
 func add_domino_to_hand_from_values(left: int, right: int):
 	var domino_scene = preload(DOMINO_SCENE_PATH)

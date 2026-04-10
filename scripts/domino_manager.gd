@@ -97,7 +97,7 @@ func sync_first_tile(values: Array, holder: GameState.Turn, from_hand: bool) -> 
 func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 	var new_domino = preload(DOMINO_SCENE_PATH).instantiate()
 	board_root.add_child(new_domino)
-	new_domino.position = board_root.to_local(get_viewport().size / 2)
+	new_domino.position = board_root.to_local(get_viewport().get_visible_rect().size / 2)
  
 	var domino_area = new_domino.get_node("Area2D")
 	domino_area.set_values(values[0], values[1])

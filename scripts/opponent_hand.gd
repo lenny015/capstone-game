@@ -12,8 +12,8 @@ var hand_y_pos
 @onready var hand_bg = $OpponentHandBackground
 
 func _ready():
-	center_screen_x = get_viewport().size.x / 2
-	hand_y_pos = get_viewport().size.y * 0.08
+	center_screen_x = get_viewport().get_visible_rect().size.x / 2
+	hand_y_pos = get_viewport().get_visible_rect().size.y * 0.08
 	GameState.hand_changed.connect(_on_hand_changed)
 
 func _on_hand_changed(whose_turn: GameState.Turn):
