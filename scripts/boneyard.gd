@@ -141,6 +141,8 @@ func _do_draw(turn: GameState.Turn) -> void:
 		GameState.hand_changed.emit(GameState.Turn.OPPONENT)
 	if domino_pool.is_empty():
 		visible = false
+		if GameState.multiplayer_mode:
+			rpc("sync_boneyard_empty")
 
 @rpc("authority")
 func receive_drawn_tile(values: Array) -> void:
@@ -151,6 +153,10 @@ func receive_drawn_tile(values: Array) -> void:
 func sync_opponent_draw(values: Array) -> void:
 	GameState.opponent_hand_data.append(values)
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+
+@rpc("authority")
+func sync_boneyard_empty() -> void:
+	visible = false
 	
 @rpc("any_peer")
 func guest_scene_ready() -> void:
