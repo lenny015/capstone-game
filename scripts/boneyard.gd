@@ -18,7 +18,10 @@ func _ready_singleplayer():
 		domino_pool.erase(values)
 	for values in GameState.opponent_hand_data:
 		domino_pool.erase(values)
-	_spawn_player_hand()
+	call_deferred("_spawn_player_hand")
+	call_deferred("_emit_opponent_hand_changed")
+
+func _emit_opponent_hand_changed():
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
 
 func _spawn_player_hand():
@@ -33,8 +36,8 @@ func _ready_multiplayer():
 			domino_pool.erase(values)
 		for values in GameState.opponent_hand_data:
 			domino_pool.erase(values)
-		_spawn_player_hand()
-		GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+		call_deferred("_spawn_player_hand")
+		call_deferred("_emit_opponent_hand_changed")
 	else:
 		rpc_id(1, "guest_scene_ready")
 
@@ -90,13 +93,14 @@ func draw_domino():
 		_do_draw(GameState.Turn.PLAYER)
 	else:
 		if domino_pool.is_empty():
-			GameState.pass_turn()
+			_check_blocked_singleplayer()
 			return
 		var values = domino_pool.pop_back()
 		GameState.add_to_hand(GameState.Turn.PLAYER, values)
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
 		if domino_pool.is_empty():
 			visible = false
+			_check_blocked_singleplayer()
 
 @rpc("any_peer")
 func host_draw_for_player() -> void:
@@ -106,27 +110,11 @@ func host_draw_for_player() -> void:
 
 func _do_draw(turn: GameState.Turn) -> void:
 	if domino_pool.is_empty():
-		var was_active = GameState.game_active
-		var passes_before = GameState.consecutive_passes
-		GameState.pass_turn()
+		var pip_counts = domino_manager.get_board_pip_counts()
+		var blocked = GameState.check_blocked(domino_manager.head_val, domino_manager.tail_val, pip_counts, true)
 		if GameState.multiplayer_mode and GameState.is_host:
-			if was_active and not GameState.game_active:
-				var reason = "draw" if passes_before >= 1 else "blocked"
-				var player_pips = 0
-				for d in GameState.player_hand_data:
-					player_pips += d[0] + d[1]
-				var opponent_pips = 0
-				for d in GameState.opponent_hand_data:
-					opponent_pips += d[0] + d[1]
-				var guest_won: int
-				if opponent_pips < player_pips:
-					guest_won = 1
-				elif player_pips < opponent_pips:
-					guest_won = 0
-				else:
-					guest_won = 1
-				if MatchState.is_match_mode():
-					get_node("../DominoManager").rpc("sync_game_over_with_scores", guest_won, reason, MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points, false)
+			if blocked:
+				domino_manager._sync_blocked_game_over()
 			else:
 				get_node("../DominoManager").rpc("sync_turn", GameState.current_turn)
 		return
@@ -143,6 +131,19 @@ func _do_draw(turn: GameState.Turn) -> void:
 		visible = false
 		if GameState.multiplayer_mode:
 			rpc("sync_boneyard_empty")
+			if GameState.is_host:
+				var pip_counts = domino_manager.get_board_pip_counts()
+				var blocked = GameState.check_blocked(domino_manager.head_val, domino_manager.tail_val, pip_counts, true)
+				if blocked:
+					domino_manager._sync_blocked_game_over()
+				elif turn == GameState.Turn.PLAYER and not _player_has_valid_move():
+					GameState.end_turn()
+					var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
+					domino_manager.rpc("sync_turn", turn_for_guest)
+
+func _check_blocked_singleplayer() -> void:
+	var pip_counts = domino_manager.get_board_pip_counts()
+	GameState.check_blocked(domino_manager.head_val, domino_manager.tail_val, pip_counts, true)
 
 @rpc("authority")
 func receive_drawn_tile(values: Array) -> void:

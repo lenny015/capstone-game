@@ -50,6 +50,16 @@ func _make_board_node(domino_node):
 		"prev": null,
 		"next": null
 	}
+
+func get_board_pip_counts() -> Dictionary:
+	var counts := {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+	var node = board_head
+	while node != null:
+		var area = node["node"].get_node("Area2D")
+		counts[area.left_val] += 1
+		counts[area.right_val] += 1
+		node = node["next"]
+	return counts
 	
 func _setup_boundary():
 	var shape = boundary_node.get_node("CollisionShape2D")
@@ -390,7 +400,6 @@ func _on_slot_clicked(slot):
 	_update_end_directions()
 
 	_clear_slots()
-	GameState.reset_passes()
 	if GameState.multiplayer_mode:
 		var left = area.left_val
 		var right = area.right_val
@@ -406,7 +415,14 @@ func _on_slot_clicked(slot):
 			rpc("sync_game_over_with_scores", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points, MatchState.capicu_pending)
 		else:
 			rpc("sync_game_over", int(GameState.current_turn == GameState.Turn.OPPONENT), "empty_hand")
-	if not won: 
+	if not won:
+		var boneyard_empty = not boneyard.visible or boneyard.domino_pool.is_empty()
+		var pip_counts = get_board_pip_counts()
+		var blocked = GameState.check_blocked(head_val, tail_val, pip_counts, boneyard_empty)
+		if blocked:
+			if GameState.multiplayer_mode and GameState.is_host:
+				_sync_blocked_game_over()
+			return
 		if GameState.multiplayer_mode and GameState.is_host:
 			GameState.end_turn()
 			var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
@@ -416,6 +432,25 @@ func _on_slot_clicked(slot):
 		elif not GameState.multiplayer_mode:
 			GameState.end_turn()
 			
+func _sync_blocked_game_over() -> void:
+	var player_pips = 0
+	for d in GameState.player_hand_data:
+		player_pips += d[0] + d[1]
+	var opponent_pips = 0
+	for d in GameState.opponent_hand_data:
+		opponent_pips += d[0] + d[1]
+	var guest_won: int
+	if opponent_pips < player_pips:
+		guest_won = 1
+	elif player_pips < opponent_pips:
+		guest_won = 0
+	else:
+		guest_won = 1
+	if MatchState.is_match_mode():
+		rpc("sync_game_over_with_scores", guest_won, "blocked", MatchState.player_score, MatchState.opponent_score, MatchState.last_round_points, false)
+	else:
+		rpc("sync_game_over", guest_won, "blocked")
+
 @rpc("any_peer")
 func sync_placement(left: int, right: int, placed_dir_int: int, is_head: bool, pos: Vector2, rot: float):
 	if multiplayer.get_remote_sender_id() == 0:
@@ -519,6 +554,7 @@ func _input(event):
 			var domino = raycast_check(1)
 			if domino:
 				toggle_selection(domino)
+		
 
 func _process(_delta):
 	var domino = raycast_check(1)

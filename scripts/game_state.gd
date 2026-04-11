@@ -13,7 +13,6 @@ var is_host: bool = false
 
 var player_hand_data: Array = []
 var opponent_hand_data: Array = []
-var consecutive_passes: int = 0
 
 func start_game(domino_pool: Array) -> void:
 	player_hand_data.clear()
@@ -30,7 +29,6 @@ func start_game(domino_pool: Array) -> void:
 			break
 		opponent_hand_data.append(domino_pool.pop_back())
 
-	consecutive_passes = 0
 	game_active = true
 	
 	hand_changed.emit(Turn.PLAYER)
@@ -107,37 +105,46 @@ func check_win_condition() -> bool:
 		return true
 	return false
 	
-func pass_turn() -> void:
-	consecutive_passes += 1
-	if consecutive_passes >= 2:
-		var player_pips = 0
-		for d in player_hand_data:
-			player_pips += d[0] + d[1]
-		var opponent_pips = 0
-		for d in opponent_hand_data:
-			opponent_pips += d[0] + d[1]
-		game_active = false
-		if player_pips < opponent_pips:
-			if MatchState.is_match_mode():
-				MatchState.add_score(Turn.PLAYER, player_pips + opponent_pips)
-			game_over.emit(Turn.PLAYER, "blocked")
-		elif opponent_pips < player_pips:
-			if MatchState.is_match_mode():
-				MatchState.add_score(Turn.OPPONENT, player_pips + opponent_pips)
-			game_over.emit(Turn.OPPONENT, "blocked")
-		else:
-			if MatchState.is_match_mode():
-				MatchState.add_score(Turn.PLAYER, 0)
-			game_over.emit(Turn.PLAYER, "draw")
-		return
-	end_turn()
-	
-func reset_passes():
-	consecutive_passes = 0
+
+func check_blocked(head_val: int, tail_val: int, board_pip_counts: Dictionary, boneyard_empty: bool) -> bool:
+	if not game_active:
+		return false
+
+	var head_saturated: bool = board_pip_counts.get(head_val, 0) >= 8
+	var tail_saturated: bool = board_pip_counts.get(tail_val, 0) >= 8
+
+	var no_player_move = not has_valid_move(Turn.PLAYER, head_val, tail_val)
+	var no_opponent_move = not has_valid_move(Turn.OPPONENT, head_val, tail_val)
+	var both_stuck = boneyard_empty and no_player_move and no_opponent_move
+
+	if (head_saturated and tail_saturated) or both_stuck:
+		_resolve_blocked()
+		return true
+	return false
+
+func _resolve_blocked() -> void:
+	var player_pips = 0
+	for d in player_hand_data:
+		player_pips += d[0] + d[1]
+	var opponent_pips = 0
+	for d in opponent_hand_data:
+		opponent_pips += d[0] + d[1]
+	game_active = false
+	if player_pips < opponent_pips:
+		if MatchState.is_match_mode():
+			MatchState.add_score(Turn.PLAYER, player_pips + opponent_pips)
+		game_over.emit(Turn.PLAYER, "blocked")
+	elif opponent_pips < player_pips:
+		if MatchState.is_match_mode():
+			MatchState.add_score(Turn.OPPONENT, player_pips + opponent_pips)
+		game_over.emit(Turn.OPPONENT, "blocked")
+	else:
+		if MatchState.is_match_mode():
+			MatchState.add_score(Turn.PLAYER, 0)
+		game_over.emit(Turn.PLAYER, "draw")
 	
 func reset():
 	player_hand_data.clear()
 	opponent_hand_data.clear()
 	current_turn = Turn.PLAYER
 	game_active = false
-	consecutive_passes = 0
