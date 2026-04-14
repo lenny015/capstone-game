@@ -144,13 +144,23 @@ func _fade_out_board():
 	tween.tween_property(board, "modulate:a", 0.0, 0.6)
 
 func _show_postgame_buttons():
-	if not GameState.multiplayer_mode:
-		return
 	button_row.visible = true
 	rematch_votes = 0
 	i_voted_rematch = false
+	if not GameState.multiplayer_mode:
+		lobby_button.visible = true
+		lobby_button.text = "Back to Menu"
+		rematch_button.text = "Rematch"
+	else:
+		lobby_button.visible = true
+		lobby_button.text = "Back to Lobby"
+		rematch_button.text = "Rematch?"
 
 func _on_rematch_pressed():
+	if not GameState.multiplayer_mode:
+		GameState.reset()
+		get_tree().change_scene_to_file("res://scenes/game_board.tscn")
+		return
 	if i_voted_rematch:
 		return
 	i_voted_rematch = true
@@ -158,6 +168,10 @@ func _on_rematch_pressed():
 	get_node("../DominoManager").rpc("sync_rematch_vote")
 
 func _on_lobby_pressed():
+	if not GameState.multiplayer_mode:
+		GameState.reset()
+		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+		return
 	get_node("../DominoManager").rpc("sync_return_to_lobby")
 
 func on_rematch_vote_received():

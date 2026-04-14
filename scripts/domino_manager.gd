@@ -139,7 +139,6 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 					player_hand.update_hand_positions()
 					break
 			GameState.remove_from_hand(GameState.Turn.PLAYER, values)
-			GameState.current_turn = GameState.Turn.OPPONENT
 			if not GameState.multiplayer_mode:
 				GameState.end_turn()
 		else:

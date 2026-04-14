@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=14 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://c23hm0aciyhe4" path="res://scripts/pause_menu.gd" id="4_pausemenu"]
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
 [ext_resource type="Script" uid="uid://dpu02tk6h0rly" path="res://scripts/hud.gd" id="5_qmxhh"]
+[ext_resource type="Script" uid="uid://c3leplgrikvje" path="res://scripts/opponent_ai.gd" id="6_opponentai"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmh4g"]
 bg_color = Color(0, 0, 0, 0.3019608)
@@ -86,6 +87,9 @@ z_as_relative = false
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_qmxhh")
+
+[node name="OpponentAI" type="Node" parent="."]
+script = ExtResource("6_opponentai")
 
 [node name="Boneyard" parent="." instance=ExtResource("3_mq2xb")]
 

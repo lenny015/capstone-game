@@ -22,8 +22,9 @@ func _on_hand_changed(whose_turn: GameState.Turn):
 	var data_count = GameState.opponent_hand_data.size()
 	var visual_count = opponent_hand.size()
 	if data_count > visual_count:
-		for i in range(data_count - visual_count):
-			_add_domino_visual(0, 0)
+		for i in range(visual_count, data_count):
+			var values = GameState.opponent_hand_data[i]
+			_add_domino_visual(values[0], values[1])
 	elif data_count < visual_count:
 		while opponent_hand.size() > data_count:
 			var domino = opponent_hand.pop_back()
