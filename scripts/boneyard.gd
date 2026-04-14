@@ -2,6 +2,14 @@ extends Node2D
 
 var domino_pool: Array = []
 
+const MAX_STACK_LAYERS = 8
+const LAYER_OFFSET = Vector2(3, 3)
+
+var _stack_layers: Array = []
+var _pool_size_at_start: int = 0
+
+@onready var main_sprite: Sprite2D = $Sprite2D
+
 @onready var player_hand = get_node("../PlayerHand")
 @onready var domino_manager = get_node("../DominoManager")
 
@@ -20,6 +28,7 @@ func _ready_singleplayer():
 		domino_pool.erase(values)
 	call_deferred("_spawn_player_hand")
 	call_deferred("_emit_opponent_hand_changed")
+	call_deferred("_init_stack")
 
 func _emit_opponent_hand_changed():
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
@@ -38,6 +47,7 @@ func _ready_multiplayer():
 			domino_pool.erase(values)
 		call_deferred("_spawn_player_hand")
 		call_deferred("_emit_opponent_hand_changed")
+		call_deferred("_init_stack")
 	else:
 		rpc_id(1, "guest_scene_ready")
 
@@ -62,6 +72,33 @@ func _player_has_valid_move() -> bool:
 		domino_manager.head_val,
 		domino_manager.tail_val
 	)
+
+func _init_stack() -> void:
+	for layer in _stack_layers:
+		if is_instance_valid(layer):
+			layer.queue_free()
+	_stack_layers.clear()
+	_pool_size_at_start = domino_pool.size()
+	
+	for i in range(MAX_STACK_LAYERS):
+		var layer = Sprite2D.new()
+		layer.texture = main_sprite.texture
+		layer.scale = main_sprite.scale
+		layer.position = main_sprite.position + LAYER_OFFSET * (i + 1)
+		layer.z_index = main_sprite.z_index - (i + 1)
+		var darkness = 1.0 - (float(i + 1) / MAX_STACK_LAYERS) * 1.2
+		layer.modulate = Color(darkness, darkness, darkness, 1.0)
+		add_child(layer)
+		_stack_layers.append(layer)
+	_update_stack()
+
+func _update_stack() -> void:
+	if _pool_size_at_start == 0:
+		return
+	var ratio = float(domino_pool.size()) / float(_pool_size_at_start)
+	var visible_layers = int(ceil(ratio * MAX_STACK_LAYERS))
+	for i in range(_stack_layers.size()):
+		_stack_layers[i].visible = i < visible_layers
 
 func _generate_all_dominoes():
 	domino_pool.clear()
@@ -98,6 +135,7 @@ func draw_domino():
 		var values = domino_pool.pop_back()
 		GameState.add_to_hand(GameState.Turn.PLAYER, values)
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
+		_update_stack()
 		if domino_pool.is_empty():
 			visible = false
 			_check_blocked_singleplayer()
@@ -127,6 +165,7 @@ func _do_draw(turn: GameState.Turn) -> void:
 		GameState.add_to_hand(GameState.Turn.OPPONENT, values)
 		rpc_id(multiplayer.get_remote_sender_id(), "receive_drawn_tile", values)
 		GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+	_update_stack()
 	if domino_pool.is_empty():
 		visible = false
 		if GameState.multiplayer_mode:
