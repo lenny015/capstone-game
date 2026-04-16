@@ -27,8 +27,10 @@ func reset_round():
 	round_number += 1
 	
 func add_score(winner: GameState.Turn, base_points: int):
-	var bonus = 100 if capicu_pending else 0
-	var total = base_points + bonus
+	var capicu_bonus: int = 0
+	if capicu_pending:
+		capicu_bonus = int(round(point_target * 0.25 / 5.0) * 5)
+	var total = base_points + capicu_bonus
 	last_round_points = total
  
 	if winner == GameState.Turn.PLAYER:

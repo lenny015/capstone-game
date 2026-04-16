@@ -84,7 +84,8 @@ func _on_round_over(winner: GameState.Turn, reason: String):
 	if reason == "draw":
 		result_text = "Draw — No points"
 	if MatchState.capicu_pending and won:
-		result_text = "Capicú! \n+%d points (+100 bonus)" % points
+		var capicu_bonus = int(round(MatchState.point_target * 0.25 / 5.0) * 5)
+		result_text = "Capicú! \n+%d points (+%d bonus)" % [points, capicu_bonus]
 	game_over_label.text = result_text
 	_set_banner_color(BANNER_COLOR)
 	game_over_banner.visible = true
