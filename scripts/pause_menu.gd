@@ -1,7 +1,10 @@
 extends Control
 
+@onready var restart_button = $VBoxContainer/RestartButton
+
 func _ready():
 	hide()
+	restart_button.visible = not GameState.multiplayer_mode
 
 func open():
 	show()
@@ -23,3 +26,10 @@ func _on_exit_to_menu_pressed():
 	GameState.reset()
 	MatchState.reset_match()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+
+func _on_restart_pressed():
+	get_tree().paused = false
+	GameState.reset()
+	get_tree().change_scene_to_file("res://scenes/game_board.tscn")
+ 

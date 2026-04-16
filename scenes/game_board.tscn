@@ -209,7 +209,6 @@ text = "| |"
 
 [node name="PauseMenu" type="Control" parent="HUD"]
 process_mode = 3
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -256,6 +255,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Resume"
 
+[node name="RestartButton" type="Button" parent="HUD/PauseMenu/VBoxContainer"]
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Restart"
+
 [node name="ExitToMenuButton" type="Button" parent="HUD/PauseMenu/VBoxContainer"]
 custom_minimum_size = Vector2(300, 64)
 layout_mode = 2
@@ -264,4 +269,5 @@ text = "Exit to Main Menu"
 
 [connection signal="pressed" from="HUD/PauseButton" to="HUD/PauseMenu" method="open"]
 [connection signal="pressed" from="HUD/PauseMenu/VBoxContainer/ResumeButton" to="HUD/PauseMenu" method="_on_resume_pressed"]
+[connection signal="pressed" from="HUD/PauseMenu/VBoxContainer/RestartButton" to="HUD/PauseMenu" method="_on_restart_pressed"]
 [connection signal="pressed" from="HUD/PauseMenu/VBoxContainer/ExitToMenuButton" to="HUD/PauseMenu" method="_on_exit_to_menu_pressed"]
