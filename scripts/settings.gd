@@ -6,19 +6,26 @@ const RESOLUTION_LABELS: Array[String] = [
 	"1920 x 1080"
 ]
 
+var _is_fullscreen: bool = false
+var _style_active: StyleBoxFlat
+var _style_inactive: StyleBoxFlat
+
+@onready var fullscreen_btn: Button = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/FullScreen
+@onready var windowed_btn: Button = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/Windowed
 @onready var resolution_option: OptionButton = $Panel/MarginContainer/VBoxContainer/VideoSection/ResolutionRow/ResolutionOption
-@onready var fullscreen_check: CheckButton = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/FullscreenCheck
 
 func _ready() -> void:
+	# Read styles set in the Inspector — FullScreen gets active style, Windowed gets inactive
+	_style_active = fullscreen_btn.get_theme_stylebox("normal")
+	_style_inactive = windowed_btn.get_theme_stylebox("normal")
+
 	resolution_option.clear()
 	for label in RESOLUTION_LABELS:
 		resolution_option.add_item(label)
 
 	var mode := DisplayServer.window_get_mode()
-	var is_fullscreen := (mode == DisplayServer.WINDOW_MODE_FULLSCREEN or
-						  mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-	fullscreen_check.button_pressed = is_fullscreen
-	resolution_option.disabled = is_fullscreen
+	_is_fullscreen = (mode == DisplayServer.WINDOW_MODE_FULLSCREEN or
+					  mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
 
 	var current_size := DisplayServer.window_get_size()
 	var best := 2
@@ -28,11 +35,26 @@ func _ready() -> void:
 			break
 	resolution_option.select(best)
 
-func _on_fullscreen_toggled(toggled_on: bool) -> void:
-	resolution_option.disabled = toggled_on
+	fullscreen_btn.pressed.connect(_on_fullscreen_pressed)
+	windowed_btn.pressed.connect(_on_windowed_pressed)
+
+	_update_toggle()
+
+func _on_fullscreen_pressed() -> void:
+	_is_fullscreen = true
+	_update_toggle()
+
+func _on_windowed_pressed() -> void:
+	_is_fullscreen = false
+	_update_toggle()
+
+func _update_toggle() -> void:
+	fullscreen_btn.add_theme_stylebox_override("normal", _style_active if _is_fullscreen else _style_inactive)
+	windowed_btn.add_theme_stylebox_override("normal", _style_active if not _is_fullscreen else _style_inactive)
+	resolution_option.disabled = _is_fullscreen
 
 func _on_apply_pressed() -> void:
-	if fullscreen_check.button_pressed:
+	if _is_fullscreen:
 		Settings.apply_fullscreen()
 	else:
 		Settings.apply_windowed(resolution_option.selected)
