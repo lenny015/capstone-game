@@ -1,9 +1,9 @@
 extends Control
 
 # PreLobby
-@onready var pre_lobby: VBoxContainer = $PreLobby
-@onready var status_label = $PreLobby/StatusLabel
-@onready var code_input = $PreLobby/CodeInput
+@onready var pre_lobby: Control = $PreLobby
+@onready var status_label: Label = $PreLobby/StatusLabel
+@onready var code_input: LineEdit = $PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/CodeInput
 
 # Lobby Room
 @onready var lobby_room: CenterContainer = $LobbyRoom
@@ -30,6 +30,10 @@ func _ready():
 	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	code_input.text_changed.connect(func(new_text):
+		code_input.text = new_text.to_upper()
+		code_input.set_caret_column(code_input.text.length())
+	)
 
 
 # Prelobby
@@ -48,6 +52,9 @@ func _on_join_pressed():
 
 func _on_back_pressed():
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+
+func _on_settings_pressed():
+	get_tree().change_scene_to_file("res://scenes/settings.tscn")
 
 
 # Entering Lobby Room
@@ -112,13 +119,13 @@ func _on_peer_connected(_peer_id: int):
 	_refresh_player_list()
 	if is_host:
 		rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
- 
+
 func _on_peer_disconnected(peer_id: int):
 	_add_chat_message("System", "Player disconnected")
 	ready_states.clear()
 	start_button.visible = false
 	_refresh_player_list()
-	
+
 	if not is_host and peer_id == 1:
 		await get_tree().create_timer(1.5).timeout
 		_return_to_menu()
@@ -134,13 +141,13 @@ func _on_ready_pressed():
 	rpc("sync_ready", my_id, is_ready)
 	_refresh_player_list()
 	_check_all_ready()
-	
+
 @rpc("any_peer", "call_local")
 func sync_ready(steam_id: int, rdy: bool):
 	ready_states[steam_id] = rdy
 	_refresh_player_list()
 	_check_all_ready()
-	
+
 func _check_all_ready():
 	if not is_host:
 		start_button.visible = false
@@ -155,7 +162,7 @@ func _check_all_ready():
 			start_button.visible = false
 			return
 	start_button.visible = true
-	
+
 func _on_mode_pressed():
 	if not is_host:
 		return
@@ -180,7 +187,7 @@ func _on_points_changed(value: float):
 func sync_settings(mode: int, target: int) -> void:
 	MatchState.game_mode = mode as MatchState.GameMode
 	MatchState.point_target = target
-	
+
 	if mode == MatchState.GameMode.MATCH:
 		mode_button.text = "Match Mode"
 		points_row.visible = true
@@ -192,14 +199,14 @@ func sync_settings(mode: int, target: int) -> void:
 func _on_start_pressed():
 	if is_host:
 		rpc("start_game_rpc")
-		
+
 @rpc("authority", "call_local")
 func start_game_rpc():
 	get_tree().change_scene_to_file("res://scenes/game_board.tscn")
 
 func _on_leave_pressed():
 	_return_to_menu()
-	
+
 func _return_to_menu():
 	Steam.leaveLobby(SteamManager.lobby_id)
 	SteamManager.lobby_id = 0
@@ -209,7 +216,7 @@ func _return_to_menu():
 	GameState.reset()
 	MatchState.reset_match()
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-	
+
 
 # Chat
 

@@ -1,6 +1,87 @@
-[gd_scene load_steps=2 format=3 uid="uid://bti26vwyugy3t"]
+[gd_scene load_steps=22 format=3 uid="uid://bti26vwyugy3t"]
 
 [ext_resource type="Script" uid="uid://btmr82kcaq4v6" path="res://scripts/lobby.gd" id="1_lobby"]
+[ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_5gu6x"]
+[ext_resource type="FontFile" uid="uid://nq3spiftbgvj" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Bold.ttf" id="3_q60fs"]
+[ext_resource type="Texture2D" uid="uid://dbs3uv1sqjdrg" path="res://assets/icons/back.svg" id="4_pc087"]
+[ext_resource type="Texture2D" uid="uid://d3sqi7kldq0pm" path="res://assets/icons/settings.svg" id="5_apkv3"]
+
+[sub_resource type="Gradient" id="Gradient_o1atq"]
+colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.08627451, 0.1882353, 0.50980395, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wu84c"]
+gradient = SubResource("Gradient_o1atq")
+width = 960
+height = 1080
+fill = 1
+fill_from = Vector2(0.50961536, 0.525641)
+fill_to = Vector2(5, 0)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5gu6x"]
+texture = SubResource("GradientTexture2D_wu84c")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q60fs"]
+bg_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+shadow_color = Color(0, 0, 0, 0.32156864)
+shadow_size = 50
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nqcc7"]
+bg_color = Color(0.15686275, 0.3137255, 0.7529412, 1)
+border_width_top = 3
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5gu6x"]
+bg_color = Color(0.11764706, 0.24705882, 0.65882355, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pc087"]
+bg_color = Color(0.98039216, 0.95686275, 0.9098039, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apkv3"]
+content_margin_left = 10.0
+bg_color = Color(0.98039216, 0.95686275, 0.9098039, 0.07058824)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q60fs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_omrgh"]
+bg_color = Color(0.98039216, 0.95686275, 0.9098039, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_omrgh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ncsg4"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_07nfq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oipnb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yad6j"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_m1sns"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -11,69 +92,186 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_lobby")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="LeftPanel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_right = 960.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_5gu6x")
+
+[node name="RightPanel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 960.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_q60fs")
+
+[node name="PreLobby" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.037383538, 0.300902, 0.60443664, 1)
 
-[node name="PreLobby" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -180.0
-offset_right = 150.0
-offset_bottom = 180.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 16
-alignment = 1
+[node name="BottomBar" type="PanelContainer" parent="PreLobby"]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 960.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_nqcc7")
 
 [node name="Title" type="Label" parent="PreLobby"]
-layout_mode = 2
+layout_mode = 0
+offset_left = 1171.0
+offset_top = 317.0
+offset_right = 1711.0
+offset_bottom = 436.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 64
+theme_override_fonts/font = ExtResource("2_5gu6x")
+theme_override_font_sizes/font_size = 96
 text = "Multiplayer"
+
+[node name="HostPanel" type="Panel" parent="PreLobby"]
+layout_mode = 0
+offset_left = 1116.0
+offset_top = 469.0
+offset_right = 1419.0
+offset_bottom = 726.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5gu6x")
+
+[node name="MarginContainer" type="MarginContainer" parent="PreLobby/HostPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PreLobby/HostPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PreLobby/HostPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_q60fs")
+theme_override_font_sizes/font_size = 24
+text = "Create Lobby"
 horizontal_alignment = 1
 
-[node name="StatusLabel" type="Label" parent="PreLobby"]
+[node name="Spacer" type="Control" parent="PreLobby/HostPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
-theme_override_font_sizes/font_size = 20
-text = "Host a game or join with a code"
-horizontal_alignment = 1
+size_flags_vertical = 3
 
-[node name="HostButton" type="Button" parent="PreLobby"]
-custom_minimum_size = Vector2(300, 64)
+[node name="HostButton" type="Button" parent="PreLobby/HostPanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(252, 61)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+theme_override_colors/font_pressed_color = Color(0.9411765, 0.9098039, 0.83137256, 1)
+theme_override_colors/font_hover_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+theme_override_fonts/font = ExtResource("3_q60fs")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_pc087")
 text = "Host Game"
 
-[node name="CodeInput" type="LineEdit" parent="PreLobby"]
-custom_minimum_size = Vector2(300, 56)
+[node name="JoinPanel" type="Panel" parent="PreLobby"]
+layout_mode = 0
+offset_left = 1461.0
+offset_top = 469.0
+offset_right = 1764.0
+offset_bottom = 726.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5gu6x")
+
+[node name="MarginContainer" type="MarginContainer" parent="PreLobby/JoinPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PreLobby/JoinPanel/MarginContainer"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="PreLobby/JoinPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_q60fs")
 theme_override_font_sizes/font_size = 24
-placeholder_text = "Enter join code"
+text = "Create Lobby"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="PreLobby/JoinPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PreLobby/JoinPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CodeInput" type="LineEdit" parent="PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(182, 61)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_q60fs")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_apkv3")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_q60fs")
+placeholder_text = "Enter code"
 max_length = 6
 
-[node name="JoinButton" type="Button" parent="PreLobby"]
-custom_minimum_size = Vector2(300, 64)
+[node name="JoinButton" type="Button" parent="PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(73, 64)
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
-text = "Join Game"
+theme_override_colors/font_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+theme_override_colors/font_pressed_color = Color(0.9411765, 0.9098039, 0.83137256, 1)
+theme_override_colors/font_hover_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+theme_override_fonts/font = ExtResource("3_q60fs")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_omrgh")
+text = "Join"
+
+[node name="StatusLabel" type="Label" parent="PreLobby"]
+layout_mode = 0
+offset_left = 1116.0
+offset_top = 740.0
+offset_right = 1764.0
+offset_bottom = 780.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
 
 [node name="BackButton" type="Button" parent="PreLobby"]
-custom_minimum_size = Vector2(300, 64)
-layout_mode = 2
+layout_mode = 0
+offset_left = 973.0
+offset_top = 22.0
+offset_right = 1055.0
+offset_bottom = 104.0
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxEmpty_omrgh")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_ncsg4")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_07nfq")
+icon = ExtResource("4_pc087")
+icon_alignment = 1
+expand_icon = true
+
+[node name="SettingsButton" type="Button" parent="PreLobby"]
+layout_mode = 0
+offset_left = 1825.0
+offset_top = 978.0
+offset_right = 1907.0
+offset_bottom = 1060.0
 theme_override_font_sizes/font_size = 28
-text = "Back"
+theme_override_styles/normal = SubResource("StyleBoxEmpty_oipnb")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_yad6j")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_m1sns")
+icon = ExtResource("5_apkv3")
+icon_alignment = 1
+expand_icon = true
 
 [node name="LobbyRoom" type="CenterContainer" parent="."]
 visible = false
@@ -252,9 +450,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Send"
 
-[connection signal="pressed" from="PreLobby/HostButton" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="PreLobby/JoinButton" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="PreLobby/HostPanel/MarginContainer/VBoxContainer/HostButton" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/JoinButton" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="PreLobby/BackButton" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="PreLobby/SettingsButton" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow/ModeButton" to="." method="_on_mode_pressed"]
 [connection signal="value_changed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow/PointsInput" to="." method="_on_points_changed"]
 [connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton" to="." method="_on_start_pressed"]
