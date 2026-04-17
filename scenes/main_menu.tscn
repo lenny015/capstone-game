@@ -182,9 +182,9 @@ expand_icon = true
 
 [node name="ExitButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1825.0
+offset_left = 977.0
 offset_top = 17.0
-offset_right = 1907.0
+offset_right = 1059.0
 offset_bottom = 99.0
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxEmpty_8ln24")

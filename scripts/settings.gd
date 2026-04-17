@@ -9,15 +9,18 @@ const RESOLUTION_LABELS: Array[String] = [
 var _is_fullscreen: bool = false
 var _style_active: StyleBoxFlat
 var _style_inactive: StyleBoxFlat
+var _style_active_hover: StyleBoxFlat
+var _style_inactive_hover: StyleBoxFlat
 
 @onready var fullscreen_btn: Button = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/FullScreen
 @onready var windowed_btn: Button = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/Windowed
 @onready var resolution_option: OptionButton = $Panel/MarginContainer/VBoxContainer/VideoSection/ResolutionRow/ResolutionOption
 
 func _ready() -> void:
-	# Read styles set in the Inspector — FullScreen gets active style, Windowed gets inactive
-	_style_active = fullscreen_btn.get_theme_stylebox("normal")
-	_style_inactive = windowed_btn.get_theme_stylebox("normal")
+	_style_active        = fullscreen_btn.get_theme_stylebox("disabled")
+	_style_inactive      = fullscreen_btn.get_theme_stylebox("normal")
+	_style_active_hover  = fullscreen_btn.get_theme_stylebox("pressed")
+	_style_inactive_hover = fullscreen_btn.get_theme_stylebox("hover_pressed")
 
 	resolution_option.clear()
 	for label in RESOLUTION_LABELS:
@@ -50,7 +53,9 @@ func _on_windowed_pressed() -> void:
 
 func _update_toggle() -> void:
 	fullscreen_btn.add_theme_stylebox_override("normal", _style_active if _is_fullscreen else _style_inactive)
-	windowed_btn.add_theme_stylebox_override("normal", _style_active if not _is_fullscreen else _style_inactive)
+	fullscreen_btn.add_theme_stylebox_override("hover",  _style_active_hover if _is_fullscreen else _style_inactive_hover)
+	windowed_btn.add_theme_stylebox_override("normal",   _style_active if not _is_fullscreen else _style_inactive)
+	windowed_btn.add_theme_stylebox_override("hover",    _style_active_hover if not _is_fullscreen else _style_inactive_hover)
 	resolution_option.disabled = _is_fullscreen
 
 func _on_apply_pressed() -> void:
