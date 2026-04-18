@@ -1,17 +1,14 @@
 extends Control
 
-# Paths
 const BASE_CODE     = "LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer"
 const BASE_PLAYERS  = "LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"
 const BASE_READY    = "LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer"
 const BASE_CHAT     = "LobbyRoom/RightPanel/MarginContainer/ChatVBox"
 
-# PreLobby
 @onready var pre_lobby:   Control  = $PreLobby
 @onready var status_label: Label   = $PreLobby/StatusLabel
 @onready var code_input:  LineEdit = $PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/CodeInput
 
-# Lobby Room
 @onready var lobby_room:    Control       = $LobbyRoom
 @onready var code_display:  Label         = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer/Panel/MarginContainer/CodeDisplay
 @onready var unlimited_btn: Button        = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer/UnlimitedButton
@@ -26,6 +23,8 @@ const BASE_CHAT     = "LobbyRoom/RightPanel/MarginContainer/ChatVBox"
 
 var _style_active: StyleBoxFlat
 var _style_inactive: StyleBoxFlat
+var _style_active_hover: StyleBoxFlat
+var _style_inactive_hover: StyleBoxFlat
 
 var is_host:  bool = false
 var is_ready: bool = false
@@ -47,9 +46,10 @@ func _ready():
 
 	points_input.editable = false
 
-	# (active = normal on UnlimitedButton, inactive = normal on MatchButton)
-	_style_active   = unlimited_btn.get_theme_stylebox("normal") if unlimited_btn.get_theme_stylebox("normal") else null
-	_style_inactive = match_btn.get_theme_stylebox("normal") if match_btn.get_theme_stylebox("normal") else null
+	_style_active         = unlimited_btn.get_theme_stylebox("normal")
+	_style_inactive       = unlimited_btn.get_theme_stylebox("disabled")
+	_style_active_hover   = unlimited_btn.get_theme_stylebox("hover_pressed")
+	_style_inactive_hover = unlimited_btn.get_theme_stylebox("pressed")
 	_update_mode_toggle()
 
 
@@ -178,7 +178,9 @@ func _update_mode_toggle():
 	points_input.editable = is_match
 	if _style_active and _style_inactive:
 		unlimited_btn.add_theme_stylebox_override("normal", _style_inactive if is_match else _style_active)
+		unlimited_btn.add_theme_stylebox_override("hover",  _style_inactive_hover if is_match else _style_active_hover)
 		match_btn.add_theme_stylebox_override("normal",     _style_active   if is_match else _style_inactive)
+		match_btn.add_theme_stylebox_override("hover",      _style_active_hover if is_match else _style_inactive_hover)
 
 func _on_points_changed(value: float):
 	if not is_host:

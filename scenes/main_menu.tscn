@@ -9,7 +9,7 @@
 [sub_resource type="Gradient" id="Gradient_bqqt6"]
 colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.08627451, 0.1882353, 0.50980395, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_wu84c"]
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_8ln24"]
 gradient = SubResource("Gradient_bqqt6")
 width = 960
 height = 1080
@@ -18,7 +18,7 @@ fill_from = Vector2(0.50961536, 0.525641)
 fill_to = Vector2(5, 0)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8ln24"]
-texture = SubResource("GradientTexture2D_wu84c")
+texture = SubResource("GradientTexture2D_8ln24")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bqqt6"]
 bg_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
