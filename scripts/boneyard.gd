@@ -49,6 +49,8 @@ func _ready_multiplayer():
 		call_deferred("_emit_opponent_hand_changed")
 		call_deferred("_init_stack")
 	else:
+		await get_tree().process_frame
+		await get_tree().process_frame
 		rpc_id(1, "guest_scene_ready")
 
 @rpc("authority")
@@ -59,6 +61,7 @@ func receive_hand(hand: Array) -> void:
 	for values in hand:
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
 	GameState.hand_changed.emit(GameState.Turn.OPPONENT)
+	rpc_id(1, "guest_hand_received")
 
 @rpc("authority")
 func receive_opponent_hand_count(host_hand: Array) -> void:
@@ -202,6 +205,13 @@ func sync_boneyard_empty() -> void:
 func guest_scene_ready() -> void:
 	if not GameState.is_host:
 		return
+	
 	rpc("receive_hand", GameState.opponent_hand_data)
 	rpc("receive_opponent_hand_count", GameState.player_hand_data)
+
+@rpc("any_peer")
+func guest_hand_received() -> void:
+	if not GameState.is_host:
+		return
+		
 	get_node("../DominoManager").on_guest_ready()
