@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=21 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
 [ext_resource type="Script" uid="uid://dpu02tk6h0rly" path="res://scripts/hud.gd" id="5_qmxhh"]
 [ext_resource type="Script" uid="uid://c3leplgrikvje" path="res://scripts/opponent_ai.gd" id="6_opponentai"]
+[ext_resource type="Texture2D" uid="uid://cvd3c0rudnajx" path="res://assets/icons/pause.svg" id="7_mmjnl"]
 
 [sub_resource type="Gradient" id="Gradient_8nsfp"]
 colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.1131868, 0.22420761, 0.5376315, 1)
@@ -21,10 +22,10 @@ texture = SubResource("GradientTexture2D_mmjnl")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmh4g"]
 bg_color = Color(0, 0, 0, 0.3019608)
-corner_radius_top_left = 30
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
-corner_radius_bottom_left = 30
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmxhh"]
 bg_color = Color(0, 0, 0, 0.3019608)
@@ -56,6 +57,12 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mmjnl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_04ve2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cwqdw"]
 
 [node name="Game Board" type="Node2D"]
 
@@ -207,13 +214,17 @@ process_mode = 3
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -64.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = 64.0
+offset_left = -99.0
+offset_top = 17.0
+offset_right = -17.0
+offset_bottom = 99.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 22
-text = "| |"
+theme_override_styles/normal = SubResource("StyleBoxEmpty_mmjnl")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_04ve2")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_cwqdw")
+icon = ExtResource("7_mmjnl")
+expand_icon = true
 
 [node name="PauseMenu" type="Control" parent="HUD"]
 process_mode = 3
