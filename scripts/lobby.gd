@@ -18,9 +18,11 @@ const BASE_CHAT     = "LobbyRoom/RightPanel/MarginContainer/ChatVBox"
 @onready var player_slot_2: Panel         = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2
 @onready var slot1_content: MarginContainer = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer
 @onready var slot1_username: Label          = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer/Username
+@onready var slot1_ready_panel: Panel       = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer/ReadyIndicator
 @onready var slot1_ready: Label             = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer/ReadyIndicator/MarginContainer/ReadyLabel
 @onready var slot2_content: MarginContainer = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer
 @onready var slot2_username: Label          = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer/Username
+@onready var slot2_ready_panel: Panel       = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer/ReadyIndicator
 @onready var slot2_ready: Label             = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer/ReadyIndicator/MarginContainer/ReadyLabel
 @onready var start_button:  Button        = $LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/StartButton
 @onready var ready_button:  Button        = $LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/ReadyButton
@@ -31,6 +33,8 @@ var _style_active: StyleBoxFlat
 var _style_inactive: StyleBoxFlat
 var _style_active_hover: StyleBoxFlat
 var _style_inactive_hover: StyleBoxFlat
+var _style_ready: StyleBoxFlat
+var _style_not_ready: StyleBoxFlat
 
 var is_host:  bool = false
 var is_ready: bool = false
@@ -51,11 +55,39 @@ func _ready():
 	)
 
 	points_input.editable = false
+	var spinbox_style := StyleBoxFlat.new()
+	spinbox_style.bg_color = Color(0.9607843, 0.93333334, 0.8627451, 0.14117648)
+	spinbox_style.border_width_left = 2
+	spinbox_style.border_width_top = 2
+	spinbox_style.border_width_right = 2
+	spinbox_style.border_width_bottom = 2
+	spinbox_style.border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+	spinbox_style.corner_radius_top_left = 10
+	spinbox_style.corner_radius_top_right = 10
+	spinbox_style.corner_radius_bottom_right = 10
+	spinbox_style.corner_radius_bottom_left = 10
+	var line_edit = points_input.get_line_edit()
+	line_edit.add_theme_stylebox_override("normal", spinbox_style)
+	line_edit.add_theme_stylebox_override("focus", spinbox_style)
+	line_edit.add_theme_stylebox_override("read_only", spinbox_style)
 
 	_style_active         = unlimited_btn.get_theme_stylebox("disabled")
 	_style_inactive       = unlimited_btn.get_theme_stylebox("normal")
 	_style_active_hover   = unlimited_btn.get_theme_stylebox("pressed")
 	_style_inactive_hover = unlimited_btn.get_theme_stylebox("hover_pressed")
+	_style_not_ready = slot1_ready_panel.get_theme_stylebox("panel")
+	var ready_style := StyleBoxFlat.new()
+	ready_style.bg_color = Color(0.18, 0.55, 0.27, 0.6)
+	ready_style.border_width_left = 1
+	ready_style.border_width_top = 1
+	ready_style.border_width_right = 1
+	ready_style.border_width_bottom = 1
+	ready_style.border_color = Color(0.3, 0.85, 0.45, 1)
+	ready_style.corner_radius_top_left = 10
+	ready_style.corner_radius_top_right = 10
+	ready_style.corner_radius_bottom_right = 10
+	ready_style.corner_radius_bottom_left = 10
+	_style_ready = ready_style
 	_update_mode_toggle()
 
 
@@ -121,6 +153,7 @@ func _refresh_player_list():
 	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
 	var contents     = [slot1_content, slot2_content]
 	var usernames    = [slot1_username, slot2_username]
+	var ready_panels = [slot1_ready_panel, slot2_ready_panel]
 	var ready_labels = [slot1_ready, slot2_ready]
 
 	for i in range(contents.size()):
@@ -131,7 +164,8 @@ func _refresh_player_list():
 			contents[i].visible      = true
 			usernames[i].text        = player_name
 			ready_labels[i].text     = "Ready" if is_rdy else "Not Ready"
-			ready_labels[i].modulate = Color(0.4, 1.0, 0.4) if is_rdy else Color(1, 1, 1)
+			ready_labels[i].modulate = Color(1, 1, 1)
+			ready_panels[i].add_theme_stylebox_override("panel", _style_ready if is_rdy else _style_not_ready)
 		else:
 			contents[i].visible = false
 

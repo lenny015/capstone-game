@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://bti26vwyugy3t"]
+[gd_scene load_steps=60 format=3 uid="uid://bti26vwyugy3t"]
 
 [ext_resource type="Script" uid="uid://btmr82kcaq4v6" path="res://scripts/lobby.gd" id="1_lobby"]
 [ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_5gu6x"]
@@ -158,10 +158,10 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o2i1r"]
 bg_color = Color(0.2481645, 0.26870453, 0.26113287, 0.30588236)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -177,10 +177,10 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0jb4q"]
 bg_color = Color(0.2481645, 0.26870453, 0.26113287, 0.30588236)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -194,12 +194,12 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wjff0"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iwi7x"]
 bg_color = Color(0.2481645, 0.26870453, 0.26113287, 0.30588236)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -213,12 +213,12 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iwi7x"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wjff0"]
 bg_color = Color(0.2481645, 0.26870453, 0.26113287, 0.30588236)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
@@ -238,6 +238,18 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_not_ready"]
+bg_color = Color(0.55, 0.18, 0.18, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.3, 0.3, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dyhay"]
 bg_color = Color(0, 0, 0, 0.54901963)
@@ -663,9 +675,9 @@ theme_override_colors/font_hover_pressed_color = Color(0.3529412, 0.5647059, 0.9
 theme_override_fonts/font = ExtResource("3_q60fs")
 theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_vwf6o")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_wjff0")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_iwi7x")
 theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_h1rib")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_iwi7x")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_wjff0")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_q60fs")
 text = "Match"
 
@@ -747,7 +759,7 @@ layout_mode = 2
 [node name="Username" type="Label" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_q60fs")
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 26
 
 [node name="Control" type="Control" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer"]
 layout_mode = 2
@@ -757,6 +769,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(127, 50)
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_not_ready")
 
 [node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer/ReadyIndicator"]
 layout_mode = 1
@@ -801,7 +814,7 @@ layout_mode = 2
 [node name="Username" type="Label" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_q60fs")
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 26
 
 [node name="Control" type="Control" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer"]
 layout_mode = 2
@@ -811,6 +824,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(127, 50)
 layout_mode = 2
 size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_not_ready")
 
 [node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer/ReadyIndicator"]
 layout_mode = 1

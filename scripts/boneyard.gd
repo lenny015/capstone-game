@@ -169,6 +169,8 @@ func _do_draw(turn: GameState.Turn) -> void:
 		rpc_id(multiplayer.get_remote_sender_id(), "receive_drawn_tile", values)
 		GameState.hand_changed.emit(GameState.Turn.OPPONENT)
 	_update_stack()
+	if GameState.multiplayer_mode and GameState.is_host:
+		rpc("sync_stack_update", domino_pool.size())
 	if domino_pool.is_empty():
 		visible = false
 		if GameState.multiplayer_mode:
@@ -208,6 +210,42 @@ func guest_scene_ready() -> void:
 	
 	rpc("receive_hand", GameState.opponent_hand_data)
 	rpc("receive_opponent_hand_count", GameState.player_hand_data)
+	rpc("sync_stack_init", domino_pool.size())
+
+@rpc("authority")
+func sync_stack_init(pool_size: int) -> void:
+	_pool_size_at_start = pool_size
+	call_deferred("_init_stack_guest", pool_size)
+
+func _init_stack_guest(pool_size: int) -> void:
+	for layer in _stack_layers:
+		if is_instance_valid(layer):
+			layer.queue_free()
+	_stack_layers.clear()
+	for i in range(MAX_STACK_LAYERS):
+		var layer = Sprite2D.new()
+		layer.texture = main_sprite.texture
+		layer.scale = main_sprite.scale
+		layer.position = main_sprite.position + LAYER_OFFSET * (i + 1)
+		layer.z_index = main_sprite.z_index - (i + 1)
+		var darkness = 1.0 - (float(i + 1) / MAX_STACK_LAYERS) * 1.2
+		layer.modulate = Color(darkness, darkness, darkness, 1.0)
+		add_child(layer)
+		_stack_layers.append(layer)
+	_pool_size_at_start = pool_size
+	_update_stack_with_size(pool_size)
+
+func _update_stack_with_size(current_size: int) -> void:
+	if _pool_size_at_start == 0:
+		return
+	var ratio = float(current_size) / float(_pool_size_at_start)
+	var visible_layers = int(ceil(ratio * MAX_STACK_LAYERS))
+	for i in range(_stack_layers.size()):
+		_stack_layers[i].visible = i < visible_layers
+
+@rpc("authority")
+func sync_stack_update(current_size: int) -> void:
+	_update_stack_with_size(current_size)
 
 @rpc("any_peer")
 func guest_hand_received() -> void:
