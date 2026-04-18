@@ -1,24 +1,33 @@
 extends Control
 
+# Paths
+const BASE_CODE     = "LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer"
+const BASE_PLAYERS  = "LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"
+const BASE_READY    = "LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer"
+const BASE_CHAT     = "LobbyRoom/RightPanel/MarginContainer/ChatVBox"
+
 # PreLobby
-@onready var pre_lobby: Control = $PreLobby
-@onready var status_label: Label = $PreLobby/StatusLabel
-@onready var code_input: LineEdit = $PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/CodeInput
+@onready var pre_lobby:   Control  = $PreLobby
+@onready var status_label: Label   = $PreLobby/StatusLabel
+@onready var code_input:  LineEdit = $PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/CodeInput
 
 # Lobby Room
-@onready var lobby_room: CenterContainer = $LobbyRoom
-@onready var code_display: Label = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/CodeDisplay
-@onready var player_list: VBoxContainer = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/PlayerList
-@onready var ready_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton
-@onready var start_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton
-@onready var chat_log: RichTextLabel = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatLog
-@onready var chat_input: LineEdit = $LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput
-@onready var settings_panel: VBoxContainer = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel
-@onready var mode_button: Button = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow/ModeButton
-@onready var points_row: HBoxContainer = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow
-@onready var points_input: SpinBox = $LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow/PointsInput
+@onready var lobby_room:    Control       = $LobbyRoom
+@onready var code_display:  Label         = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer/Panel/MarginContainer/CodeDisplay
+@onready var unlimited_btn: Button        = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer/UnlimitedButton
+@onready var match_btn:     Button        = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer/MatchButton
+@onready var points_input:  SpinBox       = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/PointsInput
+@onready var player_slot_1: Panel         = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1
+@onready var player_slot_2: Panel         = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2
+@onready var start_button:  Button        = $LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/StartButton
+@onready var ready_button:  Button        = $LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/ReadyButton
+@onready var chat_log:      RichTextLabel = $LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatLog
+@onready var chat_input:    LineEdit      = $LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput
 
-var is_host: bool = false
+var _style_active: StyleBoxFlat
+var _style_inactive: StyleBoxFlat
+
+var is_host:  bool = false
 var is_ready: bool = false
 var ready_states: Dictionary = {}
 
@@ -30,13 +39,21 @@ func _ready():
 	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+
 	code_input.text_changed.connect(func(new_text):
 		code_input.text = new_text.to_upper()
 		code_input.set_caret_column(code_input.text.length())
 	)
 
+	points_input.editable = false
 
-# Prelobby
+	# (active = normal on UnlimitedButton, inactive = normal on MatchButton)
+	_style_active   = unlimited_btn.get_theme_stylebox("normal") if unlimited_btn.get_theme_stylebox("normal") else null
+	_style_inactive = match_btn.get_theme_stylebox("normal") if match_btn.get_theme_stylebox("normal") else null
+	_update_mode_toggle()
+
+
+# PreLobby
 
 func _on_host_pressed():
 	status_label.text = "Creating lobby..."
@@ -81,30 +98,38 @@ func _on_lobby_join_failed():
 func _enter_lobby_room(code: String):
 	pre_lobby.visible = false
 	lobby_room.visible = true
-	code_display.text = "Join Code: %s" % code
+	code_display.text = code
 	start_button.visible = false
-	settings_panel.visible = true
 	if not is_host:
 		ready_button.disabled = true
 		ready_button.text = "Connecting..."
-		mode_button.disabled = true
+		unlimited_btn.disabled = true
+		match_btn.disabled = true
 		points_input.editable = false
 
 
 # Player List
 
 func _refresh_player_list():
-	for child in player_list.get_children():
-		child.queue_free()
+	for slot in [player_slot_1, player_slot_2]:
+		for child in slot.get_children():
+			child.queue_free()
+
 	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
-	for i in range(member_count):
-		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
+	var slots = [player_slot_1, player_slot_2]
+
+	for i in range(min(member_count, slots.size())):
+		var steam_id    = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
 		var player_name = Steam.getFriendPersonaName(steam_id)
-		var ready_check = ready_states.get(steam_id, false)
+		var is_rdy      = ready_states.get(steam_id, false)
+
 		var label = Label.new()
-		label.text = "%s  %s" % [player_name, "[READY]" if ready_check else "[NOT READY]"]
-		label.modulate = Color(0.4, 1.0, 0.4) if ready_check else Color(1, 1, 1)
-		player_list.add_child(label)
+		label.text = "%s   %s" % [player_name, "[READY]" if is_rdy else "[NOT READY]"]
+		label.modulate = Color(0.4, 1.0, 0.4) if is_rdy else Color(1, 1, 1)
+		label.set_anchors_preset(Control.PRESET_CENTER)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
+		slots[i].add_child(label)
 
 func _on_lobby_chat_update(_lobby_id: int, _changed_id: int, _making_change_id: int, _chat_state: int):
 	_refresh_player_list()
@@ -125,13 +150,52 @@ func _on_peer_disconnected(peer_id: int):
 	ready_states.clear()
 	start_button.visible = false
 	_refresh_player_list()
-
 	if not is_host and peer_id == 1:
 		await get_tree().create_timer(1.5).timeout
 		_return_to_menu()
 
 
-# Buttons
+# Game Mode Toggle
+
+func _on_unlimited_pressed():
+	if not is_host:
+		return
+	MatchState.game_mode = MatchState.GameMode.UNLIMITED
+	MatchState.point_target = 0
+	_update_mode_toggle()
+	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
+
+func _on_match_pressed():
+	if not is_host:
+		return
+	MatchState.game_mode = MatchState.GameMode.MATCH
+	MatchState.point_target = int(points_input.value)
+	_update_mode_toggle()
+	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
+
+func _update_mode_toggle():
+	var is_match = (MatchState.game_mode == MatchState.GameMode.MATCH)
+	points_input.editable = is_match
+	if _style_active and _style_inactive:
+		unlimited_btn.add_theme_stylebox_override("normal", _style_inactive if is_match else _style_active)
+		match_btn.add_theme_stylebox_override("normal",     _style_active   if is_match else _style_inactive)
+
+func _on_points_changed(value: float):
+	if not is_host:
+		return
+	MatchState.point_target = int(value)
+	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
+
+@rpc("authority", "call_local")
+func sync_settings(mode: int, target: int) -> void:
+	MatchState.game_mode   = mode as MatchState.GameMode
+	MatchState.point_target = target
+	_update_mode_toggle()
+	if mode == MatchState.GameMode.MATCH:
+		points_input.value = target
+
+
+# Ready / Start
 
 func _on_ready_pressed():
 	is_ready = !is_ready
@@ -162,39 +226,6 @@ func _check_all_ready():
 			start_button.visible = false
 			return
 	start_button.visible = true
-
-func _on_mode_pressed():
-	if not is_host:
-		return
-	if MatchState.game_mode == MatchState.GameMode.UNLIMITED:
-		MatchState.game_mode = MatchState.GameMode.MATCH
-		mode_button.text = "Match Mode"
-		points_row.visible = true
-		MatchState.point_target = int(points_input.value)
-	else:
-		MatchState.game_mode = MatchState.GameMode.UNLIMITED
-		mode_button.text = "Unlimited"
-		points_row.visible = false
-	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
-
-func _on_points_changed(value: float):
-	if not is_host:
-		return
-	MatchState.point_target = int(value)
-	rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
-
-@rpc("authority", "call_local")
-func sync_settings(mode: int, target: int) -> void:
-	MatchState.game_mode = mode as MatchState.GameMode
-	MatchState.point_target = target
-
-	if mode == MatchState.GameMode.MATCH:
-		mode_button.text = "Match Mode"
-		points_row.visible = true
-		points_input.value = target
-	else:
-		mode_button.text = "Unlimited"
-		points_row.visible = false
 
 func _on_start_pressed():
 	if is_host:

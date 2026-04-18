@@ -1,10 +1,12 @@
-[gd_scene load_steps=22 format=3 uid="uid://bti26vwyugy3t"]
+[gd_scene load_steps=35 format=3 uid="uid://bti26vwyugy3t"]
 
 [ext_resource type="Script" uid="uid://btmr82kcaq4v6" path="res://scripts/lobby.gd" id="1_lobby"]
 [ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_5gu6x"]
 [ext_resource type="FontFile" uid="uid://nq3spiftbgvj" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Bold.ttf" id="3_q60fs"]
 [ext_resource type="Texture2D" uid="uid://dbs3uv1sqjdrg" path="res://assets/icons/back.svg" id="4_pc087"]
 [ext_resource type="Texture2D" uid="uid://d3sqi7kldq0pm" path="res://assets/icons/settings.svg" id="5_apkv3"]
+[ext_resource type="FontFile" uid="uid://6g2vkx2ggxr8" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Light.ttf" id="6_omrgh"]
+[ext_resource type="FontFile" uid="uid://bpuj5uc8kab2q" path="res://assets/fonts/Fraunces/Fraunces_72pt-SemiBold.ttf" id="7_ncsg4"]
 
 [sub_resource type="Gradient" id="Gradient_o1atq"]
 colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.08627451, 0.1882353, 0.50980395, 1)
@@ -82,6 +84,55 @@ corner_radius_bottom_left = 10
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yad6j"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_m1sns"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ncsg4"]
+bg_color = Color(0.11764706, 0.24705882, 0.65882355, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_07nfq"]
+bg_color = Color(0.050980393, 0.12156863, 0.32156864, 1)
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dyhay"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q6qq2"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rgcd7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pc087"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oipnb"]
+bg_color = Color(0.9607843, 0.93333334, 0.8627451, 0.14117648)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lqo1b"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m1sns"]
+bg_color = Color(0.6, 0.6, 0.6, 0.1764706)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yad6j"]
+bg_color = Color(0.050980393, 0.12156863, 0.32156864, 1)
+border_width_top = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0gjkf"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -273,7 +324,7 @@ icon = ExtResource("5_apkv3")
 icon_alignment = 1
 expand_icon = true
 
-[node name="LobbyRoom" type="CenterContainer" parent="."]
+[node name="LobbyRoom" type="Control" parent="."]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -282,98 +333,388 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom"]
-custom_minimum_size = Vector2(900, 600)
-layout_mode = 2
-theme_override_constants/separation = 16
+[node name="Panel" type="Panel" parent="LobbyRoom"]
+layout_mode = 0
+offset_right = 960.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ncsg4")
 
-[node name="LeftPanel" type="PanelContainer" parent="LobbyRoom/HBoxContainer"]
-custom_minimum_size = Vector2(280, 0)
+[node name="LobbyBanner" type="Panel" parent="LobbyRoom"]
+layout_mode = 0
+offset_right = 960.0
+offset_bottom = 146.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_07nfq")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/LobbyBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom/LobbyBanner/MarginContainer"]
+layout_mode = 2
+
+[node name="LeaveLobby" type="Button" parent="LobbyRoom/LobbyBanner/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(92, 82)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxEmpty_dyhay")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_q6qq2")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rgcd7")
+icon = ExtResource("4_pc087")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Control" type="Control" parent="LobbyRoom/LobbyBanner/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LobbyTitle" type="Label" parent="LobbyRoom/LobbyBanner/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_5gu6x")
+theme_override_font_sizes/font_size = 30
+text = "Lobby"
+horizontal_alignment = 2
+
+[node name="LobbyInfo" type="PanelContainer" parent="LobbyRoom"]
+layout_mode = 0
+offset_top = 146.0
+offset_right = 960.0
+offset_bottom = 346.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_pc087")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/LobbyInfo"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom/LobbyInfo/MarginContainer"]
+layout_mode = 2
+
+[node name="CodeContainer" type="VBoxContainer" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="CodeLabel" type="Label" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("6_omrgh")
+theme_override_font_sizes/font_size = 30
+text = "LOBBY CODE"
+
+[node name="Panel" type="Panel" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer"]
+custom_minimum_size = Vector2(317, 105)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oipnb")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CodeDisplay" type="Label" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.95686275, 0.9098039, 1)
+theme_override_fonts/font = ExtResource("7_ncsg4")
+theme_override_font_sizes/font_size = 64
+text = "TEST12"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CodeContainer2" type="VBoxContainer" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("6_omrgh")
+theme_override_font_sizes/font_size = 30
+text = "GAME MODE"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer"]
+layout_mode = 2
+
+[node name="UnlimitedButton" type="Button" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(176, 46)
+layout_mode = 2
+text = "Unlimited"
+
+[node name="MatchButton" type="Button" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(176, 46)
+layout_mode = 2
+text = "Match"
+
+[node name="PointsInput" type="SpinBox" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer"]
+layout_mode = 2
+min_value = 50.0
+max_value = 1000.0
+step = 50.0
+value = 200.0
+alignment = 1
+
+[node name="Panel" type="Panel" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2"]
+visible = false
+custom_minimum_size = Vector2(317, 105)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oipnb")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CodeDisplay" type="Label" parent="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.95686275, 0.9098039, 1)
+theme_override_fonts/font = ExtResource("7_ncsg4")
+theme_override_font_sizes/font_size = 64
+text = "TEST12"
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="LobbyRoom"]
+layout_mode = 0
+offset_top = 346.0
+offset_right = 960.0
+offset_bottom = 934.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_lqo1b")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LobbyRoom/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "PLAYERS"
+
+[node name="PlayerSlot1" type="Panel" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(914, 108)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_m1sns")
+
+[node name="Spacer" type="Control" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/HBoxContainer/LeftPanel"]
+[node name="PlayerSlot2" type="Panel" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(914, 108)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_m1sns")
+
+[node name="Spacer2" type="Control" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerSlot3" type="Panel" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(914, 108)
+layout_mode = 2
+
+[node name="Spacer3" type="Control" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerSlot4" type="Panel" parent="LobbyRoom/PanelContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(914, 108)
+layout_mode = 2
+
+[node name="ReadyBanner" type="Panel" parent="LobbyRoom"]
+layout_mode = 0
+offset_top = 934.0
+offset_right = 960.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_yad6j")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/ReadyBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom/ReadyBanner/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StartButton" type="Button" parent="LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Start Game"
+
+[node name="ReadyButton" type="Button" parent="LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Ready"
+
+[node name="RightPanel" type="PanelContainer" parent="LobbyRoom"]
+custom_minimum_size = Vector2(960, 1080)
+layout_mode = 0
+offset_left = 960.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0gjkf")
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/RightPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="LeftVBox" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer"]
+[node name="ChatVBox" type="VBoxContainer" parent="LobbyRoom/RightPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChatLabel" type="Label" parent="LobbyRoom/RightPanel/MarginContainer/ChatVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "CHAT"
+
+[node name="ChatLog" type="RichTextLabel" parent="LobbyRoom/RightPanel/MarginContainer/ChatVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+scroll_following = true
+
+[node name="ChatInputRow" type="HBoxContainer" parent="LobbyRoom/RightPanel/MarginContainer/ChatVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ChatInput" type="LineEdit" parent="LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+placeholder_text = "Say something..."
+max_length = 128
+
+[node name="SendButton" type="Button" parent="LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Send"
+
+[node name="LobbyRoom_old" type="CenterContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="LobbyRoom_old"]
+custom_minimum_size = Vector2(900, 600)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="LeftPanel" type="PanelContainer" parent="LobbyRoom_old/HBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom_old/HBoxContainer/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="LeftVBox" type="VBoxContainer" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="LobbyTitle" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-text = "Lobby"
-horizontal_alignment = 1
-
-[node name="CodeDisplay" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-theme_override_font_sizes/font_size = 20
-horizontal_alignment = 1
-
-[node name="HSep1" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="HSep1" type="HSeparator" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 
-[node name="PlayersLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="PlayersLabel" type="Label" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 14
 text = "PLAYERS"
 
-[node name="PlayerList" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="PlayerList" type="VBoxContainer" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="HSep2" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="HSep2" type="HSeparator" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 
-[node name="SettingsPanel" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
-visible = false
+[node name="SettingsPanel" type="VBoxContainer" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="SettingsLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
+[node name="SettingsLabel" type="Label" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 14
 text = "GAME SETTINGS"
 
-[node name="ModeRow" type="HBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
+[node name="ModeRow" type="HBoxContainer" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ModeLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow"]
+[node name="ModeLabel" type="Label" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "Mode:"
 
-[node name="ModeButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow"]
+[node name="ModeButton" type="Button" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow"]
 custom_minimum_size = Vector2(120, 36)
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Unlimited"
 
-[node name="PointsRow" type="HBoxContainer" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
+[node name="PointsRow" type="HBoxContainer" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel"]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="PointsLabel" type="Label" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow"]
+[node name="PointsLabel" type="Label" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "Points:"
 
-[node name="PointsInput" type="SpinBox" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow"]
+[node name="PointsInput" type="SpinBox" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow"]
 custom_minimum_size = Vector2(100, 36)
 layout_mode = 2
 min_value = 50.0
@@ -381,83 +722,81 @@ max_value = 1000.0
 step = 50.0
 value = 200.0
 
-[node name="HSep3" type="HSeparator" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="HSep3" type="HSeparator" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 layout_mode = 2
 
-[node name="StartButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="StartButton" type="Button" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 visible = false
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Start Game"
 
-[node name="ReadyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
-custom_minimum_size = Vector2(0, 48)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Ready"
-
-[node name="LeaveLobbyButton" type="Button" parent="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
+[node name="LeaveLobbyButton_2" type="Button" parent="LobbyRoom_old/HBoxContainer/LeftPanel/MarginContainer/LeftVBox"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Leave Lobby"
 
-[node name="RightPanel" type="PanelContainer" parent="LobbyRoom/HBoxContainer"]
+[node name="RightPanel" type="PanelContainer" parent="LobbyRoom_old/HBoxContainer"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom/HBoxContainer/RightPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="LobbyRoom_old/HBoxContainer/RightPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="ChatVBox" type="VBoxContainer" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer"]
+[node name="ChatVBox" type="VBoxContainer" parent="LobbyRoom_old/HBoxContainer/RightPanel/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ChatLabel" type="Label" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
+[node name="ChatLabel" type="Label" parent="LobbyRoom_old/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 14
 text = "CHAT"
 
-[node name="ChatLog" type="RichTextLabel" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
+[node name="ChatLog" type="RichTextLabel" parent="LobbyRoom_old/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 scroll_following = true
 
-[node name="ChatInputRow" type="HBoxContainer" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
+[node name="ChatInputRow" type="HBoxContainer" parent="LobbyRoom_old/HBoxContainer/RightPanel/MarginContainer/ChatVBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ChatInput" type="LineEdit" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
+[node name="ChatInput" type="LineEdit" parent="LobbyRoom_old/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 placeholder_text = "Say something..."
 max_length = 128
 
-[node name="SendButton" type="Button" parent="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
+[node name="SendButton" type="Button" parent="LobbyRoom_old/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow"]
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Send"
 
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
 [connection signal="pressed" from="PreLobby/HostPanel/MarginContainer/VBoxContainer/HostButton" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/JoinButton" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="PreLobby/BackButton" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="PreLobby/SettingsButton" to="." method="_on_settings_pressed"]
-[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/ModeRow/ModeButton" to="." method="_on_mode_pressed"]
-[connection signal="value_changed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/SettingsPanel/PointsRow/PointsInput" to="." method="_on_points_changed"]
-[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/StartButton" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/ReadyButton" to="." method="_on_ready_pressed"]
-[connection signal="pressed" from="LobbyRoom/HBoxContainer/LeftPanel/MarginContainer/LeftVBox/LeaveLobbyButton" to="." method="_on_leave_pressed"]
-[connection signal="text_submitted" from="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput" to="." method="_on_chat_submitted"]
-[connection signal="pressed" from="LobbyRoom/HBoxContainer/RightPanel/MarginContainer/ChatVBox/ChatInputRow/SendButton" to="." method="_on_send_pressed"]
+[connection signal="pressed" from="LobbyRoom/LobbyBanner/MarginContainer/HBoxContainer/LeaveLobby" to="." method="_on_leave_pressed"]
+[connection signal="pressed" from="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer/UnlimitedButton" to="." method="_on_unlimited_pressed"]
+[connection signal="pressed" from="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/VBoxContainer/MatchButton" to="." method="_on_match_pressed"]
+[connection signal="value_changed" from="LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/PointsInput" to="." method="_on_points_changed"]
+[connection signal="pressed" from="LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/StartButton" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/ReadyButton" to="." method="_on_ready_pressed"]
+[connection signal="text_submitted" from="LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatInputRow/ChatInput" to="." method="_on_chat_submitted"]
+[connection signal="pressed" from="LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatInputRow/SendButton" to="." method="_on_send_pressed"]
