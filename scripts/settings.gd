@@ -1,9 +1,9 @@
 extends Control
 
 const RESOLUTION_LABELS: Array[String] = [
-	"1280 x 720",
+	"1920 x 1080",
 	"1600 x 900",
-	"1920 x 1080"
+	"1280 x 720"
 ]
 
 var _is_fullscreen: bool = false

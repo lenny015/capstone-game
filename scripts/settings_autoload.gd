@@ -2,9 +2,9 @@
 extends Node
 
 const RESOLUTIONS: Array[Vector2i] = [
-	Vector2i(1280, 720),
+	Vector2i(1920, 1080),
 	Vector2i(1600, 900),
-	Vector2i(1920, 1080)
+	Vector2i(1280, 720)
 ]
 
 func apply_windowed(res_index: int) -> void:
