@@ -46,10 +46,10 @@ func _ready():
 
 	points_input.editable = false
 
-	_style_active         = unlimited_btn.get_theme_stylebox("normal")
-	_style_inactive       = unlimited_btn.get_theme_stylebox("disabled")
-	_style_active_hover   = unlimited_btn.get_theme_stylebox("hover_pressed")
-	_style_inactive_hover = unlimited_btn.get_theme_stylebox("pressed")
+	_style_active         = unlimited_btn.get_theme_stylebox("disabled")
+	_style_inactive       = unlimited_btn.get_theme_stylebox("normal")
+	_style_active_hover   = unlimited_btn.get_theme_stylebox("pressed")
+	_style_inactive_hover = unlimited_btn.get_theme_stylebox("hover_pressed")
 	_update_mode_toggle()
 
 
@@ -99,7 +99,8 @@ func _enter_lobby_room(code: String):
 	pre_lobby.visible = false
 	lobby_room.visible = true
 	code_display.text = code
-	start_button.visible = false
+	start_button.disabled = true
+	start_button.text = "Waiting for players"
 	if not is_host:
 		ready_button.disabled = true
 		ready_button.text = "Connecting..."
@@ -148,7 +149,8 @@ func _on_peer_connected(_peer_id: int):
 func _on_peer_disconnected(peer_id: int):
 	_add_chat_message("System", "Player disconnected")
 	ready_states.clear()
-	start_button.visible = false
+	start_button.disabled = true
+	start_button.text = "Waiting for players"
 	_refresh_player_list()
 	if not is_host and peer_id == 1:
 		await get_tree().create_timer(1.5).timeout
@@ -216,18 +218,20 @@ func sync_ready(steam_id: int, rdy: bool):
 
 func _check_all_ready():
 	if not is_host:
-		start_button.visible = false
 		return
 	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
 	if member_count < 2:
-		start_button.visible = false
+		start_button.disabled = true
+		start_button.text = "Waiting for players"
 		return
 	for i in range(member_count):
 		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
 		if not ready_states.get(steam_id, false):
-			start_button.visible = false
+			start_button.disabled = true
+			start_button.text = "Waiting for players"
 			return
-	start_button.visible = true
+	start_button.disabled = false
+	start_button.text = "Start Game"
 
 func _on_start_pressed():
 	if is_host:
