@@ -3,7 +3,7 @@ extends Node2D
 var domino_pool: Array = []
 
 const MAX_STACK_LAYERS = 8
-const LAYER_OFFSET = Vector2(3, 3)
+const LAYER_OFFSET = Vector2(1.5, 1.5)
 
 var _stack_layers: Array = []
 var _pool_size_at_start: int = 0
@@ -38,7 +38,9 @@ func _spawn_player_hand():
 		player_hand.add_domino_to_hand_from_values(values[0], values[1])
 
 func _ready_multiplayer():
+	print("[Boneyard] _ready_multiplayer — is_host: ", GameState.is_host)
 	if GameState.is_host:
+		print("[Boneyard] taking HOST branch")
 		_generate_all_dominoes()
 		GameState.start_game(domino_pool.duplicate())
 		for values in GameState.player_hand_data:
@@ -49,6 +51,7 @@ func _ready_multiplayer():
 		call_deferred("_emit_opponent_hand_changed")
 		call_deferred("_init_stack")
 	else:
+		print("[Boneyard] taking GUEST branch")
 		await get_tree().process_frame
 		await get_tree().process_frame
 		rpc_id(1, "guest_scene_ready")
@@ -77,6 +80,7 @@ func _player_has_valid_move() -> bool:
 	)
 
 func _init_stack() -> void:
+	print("[Boneyard] _init_stack called — is_host: ", GameState.is_host, " | existing layers: ", _stack_layers.size())
 	for layer in _stack_layers:
 		if is_instance_valid(layer):
 			layer.queue_free()
@@ -89,10 +93,11 @@ func _init_stack() -> void:
 		layer.scale = main_sprite.scale
 		layer.position = main_sprite.position + LAYER_OFFSET * (i + 1)
 		layer.z_index = main_sprite.z_index - (i + 1)
-		var darkness = 1.0 - (float(i + 1) / MAX_STACK_LAYERS) * 1.2
+		var darkness = 1.0 - (float(i + 1) / MAX_STACK_LAYERS) * 0.6
 		layer.modulate = Color(darkness, darkness, darkness, 1.0)
 		add_child(layer)
 		_stack_layers.append(layer)
+	print("[Boneyard] _init_stack done — layers created: ", _stack_layers.size(), " | pool_size_at_start: ", _pool_size_at_start)
 	_update_stack()
 
 func _update_stack() -> void:
@@ -214,10 +219,13 @@ func guest_scene_ready() -> void:
 
 @rpc("authority")
 func sync_stack_init(pool_size: int) -> void:
+	if GameState.is_host:
+		return
 	_pool_size_at_start = pool_size
 	call_deferred("_init_stack_guest", pool_size)
 
 func _init_stack_guest(pool_size: int) -> void:
+	print("[Boneyard] _init_stack_guest called — is_host: ", GameState.is_host, " | existing layers: ", _stack_layers.size(), " | pool_size: ", pool_size)
 	for layer in _stack_layers:
 		if is_instance_valid(layer):
 			layer.queue_free()
@@ -233,6 +241,7 @@ func _init_stack_guest(pool_size: int) -> void:
 		add_child(layer)
 		_stack_layers.append(layer)
 	_pool_size_at_start = pool_size
+	print("[Boneyard] _init_stack_guest done — layers created: ", _stack_layers.size(), " | pool_size_at_start: ", _pool_size_at_start)
 	_update_stack_with_size(pool_size)
 
 func _update_stack_with_size(current_size: int) -> void:

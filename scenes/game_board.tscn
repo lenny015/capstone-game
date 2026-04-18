@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=17 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
@@ -7,6 +7,17 @@
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
 [ext_resource type="Script" uid="uid://dpu02tk6h0rly" path="res://scripts/hud.gd" id="5_qmxhh"]
 [ext_resource type="Script" uid="uid://c3leplgrikvje" path="res://scripts/opponent_ai.gd" id="6_opponentai"]
+
+[sub_resource type="Gradient" id="Gradient_8nsfp"]
+colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.1131868, 0.22420761, 0.5376315, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mmjnl"]
+gradient = SubResource("Gradient_8nsfp")
+fill = 1
+fill_from = Vector2(0.491453, 0.53846157)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cwqdw"]
+texture = SubResource("GradientTexture2D_mmjnl")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmh4g"]
 bg_color = Color(0, 0, 0, 0.3019608)
@@ -48,14 +59,11 @@ corner_radius_bottom_left = 8
 
 [node name="Game Board" type="Node2D"]
 
-[node name="Background" type="ColorRect" parent="."]
-z_index = -3
-z_as_relative = false
-offset_left = -507.0
-offset_top = -491.0
-offset_right = 2551.0
-offset_bottom = 1612.0
-color = Color(0.037383538, 0.300902, 0.60443664, 1)
+[node name="Panel" type="Panel" parent="."]
+z_index = -30
+offset_right = 1920.0
+offset_bottom = 1080.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_cwqdw")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
