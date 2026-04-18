@@ -16,6 +16,12 @@ const BASE_CHAT     = "LobbyRoom/RightPanel/MarginContainer/ChatVBox"
 @onready var points_input:  SpinBox       = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer2/HBoxContainer/PointsInput
 @onready var player_slot_1: Panel         = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1
 @onready var player_slot_2: Panel         = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2
+@onready var slot1_content: MarginContainer = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer
+@onready var slot1_username: Label          = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer/Username
+@onready var slot1_ready: Label             = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot1/MarginContainer/HBoxContainer/ReadyIndicator/MarginContainer/ReadyLabel
+@onready var slot2_content: MarginContainer = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer
+@onready var slot2_username: Label          = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer/Username
+@onready var slot2_ready: Label             = $LobbyRoom/PanelContainer/MarginContainer/VBoxContainer/PlayerSlot2/MarginContainer/HBoxContainer/ReadyIndicator/MarginContainer/ReadyLabel
 @onready var start_button:  Button        = $LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/StartButton
 @onready var ready_button:  Button        = $LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer/ReadyButton
 @onready var chat_log:      RichTextLabel = $LobbyRoom/RightPanel/MarginContainer/ChatVBox/ChatLog
@@ -112,25 +118,22 @@ func _enter_lobby_room(code: String):
 # Player List
 
 func _refresh_player_list():
-	for slot in [player_slot_1, player_slot_2]:
-		for child in slot.get_children():
-			child.queue_free()
-
 	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
-	var slots = [player_slot_1, player_slot_2]
+	var contents     = [slot1_content, slot2_content]
+	var usernames    = [slot1_username, slot2_username]
+	var ready_labels = [slot1_ready, slot2_ready]
 
-	for i in range(min(member_count, slots.size())):
-		var steam_id    = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
-		var player_name = Steam.getFriendPersonaName(steam_id)
-		var is_rdy      = ready_states.get(steam_id, false)
-
-		var label = Label.new()
-		label.text = "%s   %s" % [player_name, "[READY]" if is_rdy else "[NOT READY]"]
-		label.modulate = Color(0.4, 1.0, 0.4) if is_rdy else Color(1, 1, 1)
-		label.set_anchors_preset(Control.PRESET_CENTER)
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.vertical_alignment   = VERTICAL_ALIGNMENT_CENTER
-		slots[i].add_child(label)
+	for i in range(contents.size()):
+		if i < member_count:
+			var steam_id    = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
+			var player_name = Steam.getFriendPersonaName(steam_id)
+			var is_rdy      = ready_states.get(steam_id, false)
+			contents[i].visible      = true
+			usernames[i].text        = player_name
+			ready_labels[i].text     = "Ready" if is_rdy else "Not Ready"
+			ready_labels[i].modulate = Color(0.4, 1.0, 0.4) if is_rdy else Color(1, 1, 1)
+		else:
+			contents[i].visible = false
 
 func _on_lobby_chat_update(_lobby_id: int, _changed_id: int, _making_change_id: int, _chat_state: int):
 	_refresh_player_list()
