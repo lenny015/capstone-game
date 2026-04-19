@@ -86,6 +86,11 @@ func _place_domino(move: Dictionary) -> void:
 	var end_half = domino_manager._half_width(end_node, placed_dir)
 	var pos = end_node.position + domino_manager._dir_vec(placed_dir) * (end_half + slot_half + domino_manager.SLOT_GAP)
 
+	var dir_prev = domino_manager.head_dir_prev if is_head else domino_manager.tail_dir_prev
+	var end_area = end_node.get_node("Area2D")
+	if placed_dir != dir_prev and not end_area.is_double():
+		pos += domino_manager._dir_vec(dir_prev) * (domino_manager.TILE_H / 4.0)
+
 	var is_vertical = (placed_dir == domino_manager.Direction.UP or placed_dir == domino_manager.Direction.DOWN)
 	var base_rot = 90 if is_double == is_vertical else 0
 	var flip_rot = base_rot + 180
