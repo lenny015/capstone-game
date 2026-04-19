@@ -1,10 +1,11 @@
-[gd_scene load_steps=25 format=3 uid="uid://vojmmounvu5n"]
+[gd_scene load_steps=26 format=3 uid="uid://vojmmounvu5n"]
 
 [ext_resource type="Script" uid="uid://cg3gwdoc8384v" path="res://scripts/main_menu.gd" id="1_mainmenu"]
 [ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_ekxnf"]
 [ext_resource type="FontFile" uid="uid://nq3spiftbgvj" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Bold.ttf" id="3_bqqt6"]
 [ext_resource type="Texture2D" uid="uid://d3sqi7kldq0pm" path="res://assets/icons/settings.svg" id="4_8ln24"]
 [ext_resource type="Texture2D" uid="uid://c4vt4oarpcc8y" path="res://assets/icons/logout.svg" id="4_wu84c"]
+[ext_resource type="PackedScene" uid="uid://dvf8w4f3a7hco" path="res://scenes/domino.tscn" id="6_rtw2f"]
 
 [sub_resource type="Gradient" id="Gradient_bqqt6"]
 colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.08627451, 0.1882353, 0.50980395, 1)
@@ -196,6 +197,35 @@ expand_icon = true
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(960, 540)
+
+[node name="Control" type="Control" parent="."]
+custom_minimum_size = Vector2(960, 1080)
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="Control/MarginContainer"]
+layout_mode = 2
+
+[node name="Dominos" type="Control" parent="Control/MarginContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="Domino" parent="Control/MarginContainer/CenterContainer/Dominos" instance=ExtResource("6_rtw2f")]
+position = Vector2(70, -4)
+rotation = -0.34906584
+scale = Vector2(1.6, 1.6)
+
+[node name="Domino2" parent="Control/MarginContainer/CenterContainer/Dominos" instance=ExtResource("6_rtw2f")]
+position = Vector2(-70, 0)
+scale = Vector2(1.6, 1.6)
 
 [connection signal="pressed" from="StartButton" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="MultiplayerButton" to="." method="_on_multiplayer_pressed"]

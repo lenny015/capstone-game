@@ -7,6 +7,16 @@ const RESOLUTIONS: Array[Vector2i] = [
 	Vector2i(1280, 720)
 ]
 
+var menu_domino_1: Array[int] = []
+var menu_domino_2: Array[int] = []
+
+func _ready() -> void:
+	_randomize_menu_dominos()
+
+func _randomize_menu_dominos() -> void:
+	menu_domino_1 = [randi() % 7, randi() % 7]
+	menu_domino_2 = [randi() % 7, randi() % 7]
+
 func apply_windowed(res_index: int) -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	var res := RESOLUTIONS[res_index]

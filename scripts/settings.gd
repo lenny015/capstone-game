@@ -15,8 +15,12 @@ var _style_inactive_hover: StyleBoxFlat
 @onready var fullscreen_btn: Button = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/FullScreen
 @onready var windowed_btn: Button = $Panel/MarginContainer/VBoxContainer/VideoSection/FullscreenRow/Windowed
 @onready var resolution_option: OptionButton = $Panel/MarginContainer/VBoxContainer/VideoSection/ResolutionRow/ResolutionOption
+@onready var domino1 = $Control/MarginContainer/CenterContainer/Dominos/Domino
+@onready var domino2 = $Control/MarginContainer/CenterContainer/Dominos/Domino2
 
 func _ready() -> void:
+	domino1.get_node("Area2D").set_values(Settings.menu_domino_1[0], Settings.menu_domino_1[1])
+	domino2.get_node("Area2D").set_values(Settings.menu_domino_2[0], Settings.menu_domino_2[1])
 	_style_active        = fullscreen_btn.get_theme_stylebox("disabled")
 	_style_inactive      = fullscreen_btn.get_theme_stylebox("normal")
 	_style_active_hover  = fullscreen_btn.get_theme_stylebox("pressed")

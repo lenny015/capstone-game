@@ -8,6 +8,8 @@ const BASE_CHAT     = "LobbyRoom/RightPanel/MarginContainer/ChatVBox"
 @onready var pre_lobby:   Control  = $PreLobby
 @onready var status_label: Label   = $PreLobby/StatusLabel
 @onready var code_input:  LineEdit = $PreLobby/JoinPanel/MarginContainer/VBoxContainer/HBoxContainer/CodeInput
+@onready var domino1 = $Control/MarginContainer/CenterContainer/Dominos/Domino
+@onready var domino2 = $Control/MarginContainer/CenterContainer/Dominos/Domino2
 
 @onready var lobby_room:    Control       = $LobbyRoom
 @onready var code_display:  Label         = $LobbyRoom/LobbyInfo/MarginContainer/HBoxContainer/CodeContainer/Panel/MarginContainer/CodeDisplay
@@ -41,6 +43,8 @@ var is_ready: bool = false
 var ready_states: Dictionary = {}
 
 func _ready():
+	domino1.get_node("Area2D").set_values(Settings.menu_domino_1[0], Settings.menu_domino_1[1])
+	domino2.get_node("Area2D").set_values(Settings.menu_domino_2[0], Settings.menu_domino_2[1])
 	SteamManager.lobby_created.connect(_on_lobby_created)
 	SteamManager.lobby_joined.connect(_on_lobby_joined)
 	SteamManager.lobby_join_failed.connect(_on_lobby_join_failed)
