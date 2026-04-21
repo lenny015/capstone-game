@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bal2psoc1bktl"]
+[gd_scene load_steps=23 format=3 uid="uid://bal2psoc1bktl"]
 
 [ext_resource type="Script" uid="uid://cqf20fecf0uka" path="res://scripts/domino_manager.gd" id="1_tqoos"]
 [ext_resource type="Script" uid="uid://divos1gu6mjf8" path="res://scripts/player_hand.gd" id="2_3wu0g"]
@@ -7,10 +7,11 @@
 [ext_resource type="Script" uid="uid://v4anbgaija0t" path="res://scripts/opponent_hand.gd" id="5_opphand"]
 [ext_resource type="Script" uid="uid://dpu02tk6h0rly" path="res://scripts/hud.gd" id="5_qmxhh"]
 [ext_resource type="Script" uid="uid://c3leplgrikvje" path="res://scripts/opponent_ai.gd" id="6_opponentai"]
+[ext_resource type="FontFile" uid="uid://d3gohhbkemegg" path="res://assets/fonts/Fraunces/Fraunces_72pt-Bold.ttf" id="7_cwqdw"]
 [ext_resource type="Texture2D" uid="uid://cvd3c0rudnajx" path="res://assets/icons/pause.svg" id="7_mmjnl"]
 
 [sub_resource type="Gradient" id="Gradient_8nsfp"]
-colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.1131868, 0.22420761, 0.5376315, 1)
+colors = PackedColorArray(0.1131868, 0.22420761, 0.5376315, 1, 0.050980393, 0.12156863, 0.32156864, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_mmjnl"]
 gradient = SubResource("Gradient_8nsfp")
@@ -36,6 +37,18 @@ corner_radius_bottom_left = 30
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
 size = Vector2(245, 111.38461)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mmjnl"]
+bg_color = Color(1, 1, 1, 0.0627451)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8nsfp"]
 bg_color = Color(0, 0, 0, 1)
@@ -87,6 +100,7 @@ z_index = 1
 script = ExtResource("2_3wu0g")
 
 [node name="PlayerHandBackground" type="Panel" parent="PlayerHand"]
+visible = false
 z_index = -1
 z_as_relative = false
 offset_right = 40.0
@@ -97,6 +111,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_cmh4g")
 script = ExtResource("5_opphand")
 
 [node name="OpponentHandBackground" type="Panel" parent="OpponentHand"]
+visible = false
 z_index = -1
 z_as_relative = false
 offset_right = 40.0
@@ -125,11 +140,12 @@ visible = false
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 8.0
-offset_top = -80.0
-offset_right = 80.0
-offset_bottom = 80.0
+offset_left = 19.0
+offset_top = -129.0
+offset_right = 141.0
+offset_bottom = 126.0
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mmjnl")
 
 [node name="ScoreVBox" type="VBoxContainer" parent="HUD/ScoreDisplay"]
 layout_mode = 2
@@ -139,24 +155,25 @@ alignment = 1
 [node name="OpponentScoreLabel" type="Label" parent="HUD/ScoreDisplay/ScoreVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "Opp
-0"
+theme_override_fonts/font = ExtResource("7_cwqdw")
+theme_override_font_sizes/font_size = 64
+text = "0"
 horizontal_alignment = 1
 
 [node name="Divider" type="Label" parent="HUD/ScoreDisplay/ScoreVBox"]
+custom_minimum_size = Vector2(61, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 20
 text = "—"
 horizontal_alignment = 1
 
 [node name="PlayerScoreLabel" type="Label" parent="HUD/ScoreDisplay/ScoreVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "You
-0"
+theme_override_fonts/font = ExtResource("7_cwqdw")
+theme_override_font_sizes/font_size = 64
+text = "0"
 horizontal_alignment = 1
 
 [node name="GameOverBanner" type="Panel" parent="HUD"]
@@ -228,6 +245,7 @@ expand_icon = true
 
 [node name="PauseMenu" type="Control" parent="HUD"]
 process_mode = 3
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

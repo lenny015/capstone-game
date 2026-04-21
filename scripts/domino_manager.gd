@@ -153,6 +153,9 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 		var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
 		rpc("sync_turn", turn_for_guest)
 		GameState.turn_changed.emit(GameState.current_turn)
+
+	player_hand.visible = true
+	get_node("../OpponentHand").visible = true
 	
 func _half_width(domino_node: Node2D, dir: Direction) -> float:
 	var r = int(domino_node.rotation_degrees) % 180

@@ -49,8 +49,8 @@ func _on_turn_changed(whose_turn: GameState.Turn):
 		_fade_border(opponent_bg, BORDER_COLOR_ON)
 
 func _on_score_changed(player_score: int, opponent_score: int) -> void:
-	player_score_label.text = "You\n%d" % player_score
-	opponent_score_label.text = "Opp\n%d" % opponent_score
+	player_score_label.text = "%d" % player_score
+	opponent_score_label.text = "%d" % opponent_score
 
 func _on_game_over(winner: GameState.Turn, reason: String):
 	_fade_border(player_bg, BORDER_COLOR_OFF)
