@@ -1,0 +1,89 @@
+[gd_scene load_steps=6 format=3 uid="uid://bk7j4ghbg7t0y"]
+
+[ext_resource type="Script" uid="uid://bdncln0a317b7" path="res://scripts/steam_profile.gd" id="1_profile"]
+[ext_resource type="FontFile" uid="uid://nq3spiftbgvj" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Bold.ttf" id="2_profile"]
+[ext_resource type="FontFile" uid="uid://c3xhdkqffvho2" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Regular.ttf" id="3_profile"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_avatar_bg"]
+bg_color = Color(0.14901961, 0.17254902, 0.20784314, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3529412, 0.5647059, 0.9411765, 1)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dot"]
+bg_color = Color(0.3, 0.85, 0.45, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="SteamProfile" type="Control"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_profile")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="AvatarContainer" type="Panel" parent="HBoxContainer"]
+custom_minimum_size = Vector2(82, 82)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_avatar_bg")
+
+[node name="AvatarRect" type="TextureRect" parent="HBoxContainer/AvatarContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = -1.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.95686275, 0.9098039, 1)
+theme_override_fonts/font = ExtResource("2_profile")
+theme_override_font_sizes/font_size = 18
+text = "Player Name"
+
+[node name="StatusRow" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusDot" type="Panel" parent="HBoxContainer/VBoxContainer/StatusRow"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_dot")
+
+[node name="StatusLabel" type="Label" parent="HBoxContainer/VBoxContainer/StatusRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_fonts/font = ExtResource("3_profile")
+theme_override_font_sizes/font_size = 14
+text = "Online"

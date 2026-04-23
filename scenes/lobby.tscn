@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://bti26vwyugy3t"]
+[gd_scene load_steps=69 format=3 uid="uid://bti26vwyugy3t"]
 
 [ext_resource type="Script" uid="uid://btmr82kcaq4v6" path="res://scripts/lobby.gd" id="1_lobby"]
 [ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_5gu6x"]
@@ -9,6 +9,7 @@
 [ext_resource type="FontFile" uid="uid://bpuj5uc8kab2q" path="res://assets/fonts/Fraunces/Fraunces_72pt-SemiBold.ttf" id="7_ncsg4"]
 [ext_resource type="FontFile" uid="uid://c3xhdkqffvho2" path="res://assets/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Regular.ttf" id="8_ncsg4"]
 [ext_resource type="PackedScene" uid="uid://dvf8w4f3a7hco" path="res://scenes/domino.tscn" id="9_07nfq"]
+[ext_resource type="PackedScene" uid="uid://bk7j4ghbg7t0y" path="res://scenes/steam_profile.tscn" id="99_profile"]
 
 [sub_resource type="Gradient" id="Gradient_o1atq"]
 colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.08627451, 0.1882353, 0.50980395, 1)
@@ -587,6 +588,13 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_m1sns")
 icon = ExtResource("5_apkv3")
 icon_alignment = 1
 expand_icon = true
+
+[node name="SteamProfile" parent="PreLobby" instance=ExtResource("99_profile")]
+layout_mode = 0
+offset_left = 973.0
+offset_top = 984.0
+offset_right = 1269.0
+offset_bottom = 1060.0
 
 [node name="LobbyRoom" type="Control" parent="."]
 visible = false

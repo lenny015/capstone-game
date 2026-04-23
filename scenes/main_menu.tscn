@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://vojmmounvu5n"]
+[gd_scene load_steps=27 format=3 uid="uid://vojmmounvu5n"]
 
 [ext_resource type="Script" uid="uid://cg3gwdoc8384v" path="res://scripts/main_menu.gd" id="1_mainmenu"]
 [ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_ekxnf"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://d3sqi7kldq0pm" path="res://assets/icons/settings.svg" id="4_8ln24"]
 [ext_resource type="Texture2D" uid="uid://c4vt4oarpcc8y" path="res://assets/icons/logout.svg" id="4_wu84c"]
 [ext_resource type="PackedScene" uid="uid://dvf8w4f3a7hco" path="res://scenes/domino.tscn" id="6_rtw2f"]
+[ext_resource type="PackedScene" uid="uid://bk7j4ghbg7t0y" path="res://scenes/steam_profile.tscn" id="99_profile"]
 
 [sub_resource type="Gradient" id="Gradient_bqqt6"]
 colors = PackedColorArray(0.050980393, 0.12156863, 0.32156864, 1, 0.08627451, 0.1882353, 0.50980395, 1)
@@ -226,6 +227,13 @@ scale = Vector2(1.6, 1.6)
 [node name="Domino2" parent="Control/MarginContainer/CenterContainer/Dominos" instance=ExtResource("6_rtw2f")]
 position = Vector2(-70, 0)
 scale = Vector2(1.6, 1.6)
+
+[node name="SteamProfile" parent="." instance=ExtResource("99_profile")]
+layout_mode = 0
+offset_left = 973.0
+offset_top = 984.0
+offset_right = 1269.0
+offset_bottom = 1060.0
 
 [connection signal="pressed" from="StartButton" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="MultiplayerButton" to="." method="_on_multiplayer_pressed"]
