@@ -41,6 +41,7 @@ var _style_not_ready: StyleBoxFlat
 var is_host:  bool = false
 var is_ready: bool = false
 var ready_states: Dictionary = {}
+var _other_player_name: String = ""
 
 func _ready():
 	domino1.get_node("Area2D").set_values(Settings.menu_domino_1[0], Settings.menu_domino_1[1])
@@ -125,6 +126,7 @@ func _on_lobby_created(lobby_id: int):
 	_enter_lobby_room(code)
 	await get_tree().process_frame
 	_refresh_player_list()
+	_add_chat_message("System", "Lobby created — code: %s" % code)
 
 func _on_lobby_joined(lobby_id: int):
 	if is_host:
@@ -180,7 +182,14 @@ func _on_lobby_chat_update(_lobby_id: int, _changed_id: int, _making_change_id: 
 # Peer Connection
 
 func _on_peer_connected(_peer_id: int):
-	_add_chat_message("System", "Player connected")
+	var member_count = Steam.getNumLobbyMembers(SteamManager.lobby_id)
+	_other_player_name = ""
+	for i in range(member_count):
+		var steam_id = Steam.getLobbyMemberByIndex(SteamManager.lobby_id, i)
+		if steam_id != Steam.getSteamID():
+			_other_player_name = Steam.getFriendPersonaName(steam_id)
+			break
+	_add_chat_message("System", "%s connected" % _other_player_name if _other_player_name != "" else "Player connected")
 	ready_button.disabled = false
 	ready_button.text = "Ready"
 	_refresh_player_list()
@@ -188,7 +197,9 @@ func _on_peer_connected(_peer_id: int):
 		rpc("sync_settings", int(MatchState.game_mode), MatchState.point_target)
 
 func _on_peer_disconnected(peer_id: int):
-	_add_chat_message("System", "Player disconnected")
+	var name_str = _other_player_name if _other_player_name != "" else "Player"
+	_add_chat_message("System", "%s disconnected" % name_str)
+	_other_player_name = ""
 	ready_states.clear()
 	start_button.disabled = true
 	start_button.text = "Waiting for players"
