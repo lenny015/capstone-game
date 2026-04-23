@@ -150,6 +150,8 @@ func _spawn_first_tile(values: Array, holder: GameState.Turn, from_hand: bool):
 				GameState.turn_changed.emit(GameState.current_turn)	
 		
 	if GameState.multiplayer_mode and GameState.is_host:
+		if not from_hand:
+			GameState.end_turn()
 		var turn_for_guest = GameState.Turn.PLAYER if GameState.current_turn == GameState.Turn.OPPONENT else GameState.Turn.OPPONENT
 		rpc("sync_turn", turn_for_guest)
 		GameState.turn_changed.emit(GameState.current_turn)
