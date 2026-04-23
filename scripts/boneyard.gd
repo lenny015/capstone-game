@@ -236,7 +236,7 @@ func _init_stack_guest(pool_size: int) -> void:
 		layer.scale = main_sprite.scale
 		layer.position = main_sprite.position + LAYER_OFFSET * (i + 1)
 		layer.z_index = main_sprite.z_index - (i + 1)
-		var darkness = 1.0 - (float(i + 1) / MAX_STACK_LAYERS) * 1.2
+		var darkness = 1.0 - (float(i + 1) / MAX_STACK_LAYERS) * 0.6
 		layer.modulate = Color(darkness, darkness, darkness, 1.0)
 		add_child(layer)
 		_stack_layers.append(layer)
