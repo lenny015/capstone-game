@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=3 uid="uid://bti26vwyugy3t"]
+[gd_scene load_steps=68 format=3 uid="uid://bti26vwyugy3t"]
 
 [ext_resource type="Script" uid="uid://btmr82kcaq4v6" path="res://scripts/lobby.gd" id="1_lobby"]
 [ext_resource type="FontFile" uid="uid://dvsyn4hipdkdk" path="res://assets/fonts/Fraunces/Fraunces_72pt-Black.ttf" id="2_5gu6x"]
@@ -277,6 +277,13 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_417c5"]
+bg_color = Color(0.5019608, 0.47843137, 0.44313726, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3jc85"]
 bg_color = Color(0.94941276, 0.8892435, 0.76879555, 1)
 corner_radius_top_left = 10
@@ -284,11 +291,43 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0jb4q"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_50md7"]
+bg_color = Color(0.98039216, 0.95686275, 0.9098039, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8ht5e"]
+bg_color = Color(0.5019608, 0.47843137, 0.44313726, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuh25"]
+bg_color = Color(0.94941276, 0.8892435, 0.76879555, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6mek4"]
+bg_color = Color(0, 0.006849012, 0.02806424, 0.41960785)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8ht5e"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0gjkf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q6qq2"]
 content_margin_left = 15.0
-bg_color = Color(0.98039216, 0.95686275, 0.9098039, 0.25882354)
+bg_color = Color(0.98039216, 0.95686275, 0.9098039, 0.023529412)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
@@ -922,15 +961,25 @@ theme_override_colors/font_hover_color = Color(0.20392157, 0.39215687, 0.8313725
 theme_override_fonts/font = ExtResource("3_q60fs")
 theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_kn4i6")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_417c5")
 theme_override_styles/hover = SubResource("StyleBoxFlat_3jc85")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0jb4q")
 text = "Ready"
 
 [node name="StartButton" type="Button" parent="LobbyRoom/ReadyBanner/MarginContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+theme_override_colors/font_focus_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
+theme_override_colors/font_hover_color = Color(0.20392157, 0.39215687, 0.83137256, 1)
 theme_override_fonts/font = ExtResource("3_q60fs")
 theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_50md7")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8ht5e")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tuh25")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_6mek4")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_8ht5e")
 disabled = true
 text = "Waiting for players"
 

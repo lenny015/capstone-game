@@ -11,7 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://cvd3c0rudnajx" path="res://assets/icons/pause.svg" id="7_mmjnl"]
 
 [sub_resource type="Gradient" id="Gradient_8nsfp"]
-colors = PackedColorArray(0.1131868, 0.22420761, 0.5376315, 1, 0.050980393, 0.12156863, 0.32156864, 1)
+offsets = PackedFloat32Array(0, 0.9919028)
+colors = PackedColorArray(0.15821216, 0.29541567, 0.67891, 1, 0.1248957, 0.24382704, 0.5795002, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_mmjnl"]
 gradient = SubResource("Gradient_8nsfp")
@@ -28,12 +29,12 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmxhh"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cwqdw"]
 bg_color = Color(0, 0, 0, 0.3019608)
-corner_radius_top_left = 30
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
-corner_radius_bottom_left = 30
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0jtfi"]
 size = Vector2(245, 111.38461)
@@ -116,7 +117,7 @@ z_index = -1
 z_as_relative = false
 offset_right = 40.0
 offset_bottom = 40.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_qmxhh")
+theme_override_styles/panel = SubResource("StyleBoxFlat_cwqdw")
 
 [node name="OpponentAI" type="Node" parent="."]
 script = ExtResource("6_opponentai")
